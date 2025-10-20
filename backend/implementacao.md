@@ -46,7 +46,13 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
 
 ## 6) Serviços (Regras)
 - [x] Serviços de listagem iniciais.
-- [ ] Encapsular regras de negócio (ex.: validação de UF, formato IBGE, faixas etárias válidas).
+- [x] Encapsular regras de negócio (ex.: validação de UF, formato IBGE, faixas etárias válidas).
+  - Território: valida UF (uppercase, 2 chars) e IBGE (6–7 dígitos); CRUD em `app/services/territorio_service.py`.
+  - Tempo: parse de data ISO (YYYY-MM-DD); CRUD em `app/services/tempo_service.py`.
+  - Unidade: trims/validação simples; CRUD em `app/services/unidade_service.py`.
+  - Equipe: tipo válido (ESF/ESB/ACS/OUTROS); CRUD em `app/services/equipe_service.py`.
+  - Fonte: código único; CRUD em `app/services/fonte_service.py`.
+  - Pop Faixa: chave composta única; CRUD em `app/services/pop_faixa_service.py`.
 
 ## 7) Rotas (API)
 - [x] GET saúde: `/health`.
