@@ -26,13 +26,13 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
 
 ## 4) Schemas (DTOs)
 - [x] DTOs iniciais: território/tempo em `app/schemas/*`.
-- [ ] Adicionar DTOs Create/Update/List para:
-  - [ ] `DimTerritorio` (Create/Update/Out)
-  - [ ] `DimTempo` (Create/Update/Out)
-  - [ ] `DimPopFaixaEtaria` (Create/Update/Out)
-  - [ ] `DimUnidade` (Create/Update/Out)
-  - [ ] `DimEquipe` (Create/Update/Out)
-  - [ ] `DimFonteRecurso` (Create/Update/Out)
+- [x] Adicionar DTOs Create/Update/Out para:
+  - [x] `DimTerritorio` (Create/Update/Out)
+  - [x] `DimTempo` (Create/Update/Out)
+  - [x] `DimPopFaixaEtaria` (Create/Update/Out)
+  - [x] `DimUnidade` (Create/Update/Out)
+  - [x] `DimEquipe` (Create/Update/Out)
+  - [x] `DimFonteRecurso` (Create/Update/Out)
 
 ## 5) Repositórios
 - [x] Repositório básico de território/tempo.
