@@ -82,5 +82,6 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
 - [ ] (Opcional) Testes unitários de serviços/repositórios (SQLite em memória).
 
 ## 11) Entrega
-- [ ] Documentar rotas e exemplos no README do backend.
-- [ ] Preparar `alembic.ini`/pipelines para deploy (prod: Postgres/Supabase).
+- [x] Documentar rotas e exemplos no README do backend (`backend/README.md`).
+- [x] Preparar `alembic.ini`/migrations para deploy (prod: Postgres/Supabase).
+  - Startup em Postgres cria schemas e roda `alembic upgrade head` automaticamente.

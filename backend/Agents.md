@@ -1,24 +1,35 @@
 # Backend Architecture Guide
 
-This backend is organized for clarity, testability, and incremental growth. Each folder separates a concern; start small and extend as features mature.
+Visão geral
+- Organização por camadas para facilitar testes e evolução incremental.
+- Modo Dev (SQLite) com seed automático; modo Prod (Postgres) com Alembic e criação de schemas `dw`/`stage` no startup.
+- Escrita protegida por `X-API-Key` se `API_KEY` estiver definido no ambiente.
 
-- app/core: Application-wide setup and configuration. Provides settings (env-driven) and shared app wiring.
-- app/api: HTTP-layer only. Routers, request/response handling, and dependency wiring. No business logic here.
-- app/api/routes: Route modules grouped by domain (e.g., health). Each file registers endpoints on a router.
-- app/models: Persistence-layer entities (e.g., SQLModel/ORM) — define tables and relations here when a DB is enabled.
-- app/schemas: Pydantic models for request/response payloads (DTOs). Keep them separate from persistence models.
-- app/services: Business logic and integrations (e.g., storage, email, background jobs). Stateless and reusable.
-- app/repositories: Data-access abstractions. Encapsulate queries and persistence details.
-- app/utils: Small, generic utilities (pure functions, helpers).
-- app/workers: Background tasks (e.g., RQ/celery). Keep task definitions and queues here.
+Pastas
+- `app/core`: configuração (env, CORS, erros, segurança) e integração com DB (`engine`, `get_session`).
+- `app/api`: camada HTTP (FastAPI) e roteadores.
+- `app/api/routes`: módulos de rotas por domínio (`territorios`, `tempo`, `unidades`, `equipes`, `fontes`, `pop_faixa`, `fatos`).
+- `app/models`: entidades ORM (SQLModel). `dw.py` (prod) e `dev_lite.py` (SQLite-dev).
+- `app/schemas`: DTOs Pydantic (Create/Update/Out) por dimensão.
+- `app/services`: regras de negócio e orquestração de repositórios.
+- `app/repositories`: consultas/persistência, validações de unicidade.
+- `app/utils` e `app/workers`: utilitários e tarefas assíncronas (a definir).
 
-Conventions
-- Keep route handlers thin; delegate to services. 
-- Avoid importing from api into services/repositories (one-way dependency).
-- Add unit tests colocated by feature or under tests/ (not included yet).
+Fluxo recomendado
+1) Schemas (DTOs) em `app/schemas/<dominio>.py`.
+2) Repositório em `app/repositories/<dominio>_repo.py` (list/get/create/update/delete).
+3) Serviço em `app/services/<dominio>_service.py` (validações e conversões DTO↔modelo).
+4) Rota em `app/api/routes/<dominio>.py` (handlers finos; dependências/segurança).
 
-Bootstrapping
-- main.py creates the FastAPI app, loads CORS from settings, mounts routers from app/api, and leaves stubs for DB and storage initialization for future work.
+Execução
+- Dev: `uvicorn main:app --reload --port 8000`.
+- Prod/Postgres: defina `DATABASE_URL`, a API cria `dw`/`stage` e roda `alembic upgrade head` automaticamente.
 
-Extend safely
-- Add new features by creating a schema → service → repository → route. Keep changes minimal and cohesive.
+Testes
+- `pytest -q` (usa SQLite `dev_test.db` por padrão; sem API key).
+
+Exemplo rápido (CRUD Territórios)
+- Schemas: `app/schemas/territorio.py`
+- Repo: `app/repositories/territorio_repo.py`
+- Service: `app/services/territorio_service.py`
+- Rotas: `app/api/routes/territorios.py`
