@@ -36,7 +36,13 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
 
 ## 5) Repositórios
 - [x] Repositório básico de território/tempo.
-- [ ] Implementar CRUD repositório para cada dimensão acima (list/get/create/update/delete) com validações simples (ex.: chaves únicas).
+- [x] Implementar CRUD repositório para cada dimensão acima (list/get/create/update/delete) com validações simples (ex.: chaves únicas).
+  - Território: `app/repositories/territorio_repo.py`
+  - Tempo: `app/repositories/tempo_repo.py`
+  - Pop Faixa Etária: `app/repositories/pop_faixa_repo.py`
+  - Unidade: `app/repositories/unidade_repo.py`
+  - Equipe: `app/repositories/equipe_repo.py`
+  - Fonte Recurso: `app/repositories/fonte_repo.py`
 
 ## 6) Serviços (Regras)
 - [x] Serviços de listagem iniciais.
