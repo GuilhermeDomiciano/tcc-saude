@@ -76,8 +76,10 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
 - [x] Acrescentar seed leve para `dim_pop_faixa_etaria` (versão dev `DevDimPopFaixaEtaria`).
 
 ## 10) Testes
-- [ ] Testes unitários de serviços/repositórios (SQLite em memória).
-- [ ] Testes de API com `TestClient` (FastAPI).
+- [x] Testes de API com `TestClient` (FastAPI) em `backend/tests/`.
+  - `test_health.py`, `test_territorios.py`, `test_tempo.py`, `test_unidades.py`.
+  - Execução: `cd backend && pytest -q`.
+- [ ] (Opcional) Testes unitários de serviços/repositórios (SQLite em memória).
 
 ## 11) Entrega
 - [ ] Documentar rotas e exemplos no README do backend.
