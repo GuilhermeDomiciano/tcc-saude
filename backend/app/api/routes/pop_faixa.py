@@ -10,6 +10,7 @@ from app.schemas.pop_faixa import (
     DimPopFaixaEtariaCreate,
     DimPopFaixaEtariaUpdate,
 )
+from app.core.security import require_api_key
 
 
 router = APIRouter(prefix="/dw/pop-faixa")
@@ -27,7 +28,7 @@ def list_pop_faixa(
     return service.list(session, limit=limit, offset=offset, territorio_id=territorio_id, ano=ano)
 
 
-@router.post("", response_model=DimPopFaixaEtariaOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=DimPopFaixaEtariaOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_api_key)])
 def create_pop_faixa(payload: DimPopFaixaEtariaCreate, session: Session = Depends(get_session)):
     service = PopFaixaService()
     try:
@@ -36,7 +37,7 @@ def create_pop_faixa(payload: DimPopFaixaEtariaCreate, session: Session = Depend
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
-@router.put("/{id}", response_model=DimPopFaixaEtariaOut)
+@router.put("/{id}", response_model=DimPopFaixaEtariaOut, dependencies=[Depends(require_api_key)])
 def update_pop_faixa(id: int, payload: DimPopFaixaEtariaUpdate, session: Session = Depends(get_session)):
     service = PopFaixaService()
     try:
@@ -48,11 +49,10 @@ def update_pop_faixa(id: int, payload: DimPopFaixaEtariaUpdate, session: Session
     return updated
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_api_key)])
 def delete_pop_faixa(id: int, session: Session = Depends(get_session)):
     service = PopFaixaService()
     ok = service.delete(session, id)
     if not ok:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Registro não encontrado")
     return None
-

@@ -11,11 +11,11 @@ class Settings:
     allowed_origins: tuple[str, ...] = tuple(
         o.strip() for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
     )
+    api_key: str | None = os.getenv("API_KEY")
 
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    # Load root and backend .env for flexibility
     root_env = find_dotenv(filename=".env", raise_error_if_not_found=False)
     if root_env:
         load_dotenv(dotenv_path=root_env, override=False)

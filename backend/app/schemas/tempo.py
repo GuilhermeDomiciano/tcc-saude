@@ -9,6 +9,20 @@ class DimTempoCreate(BaseModel):
     trimestre: int = Field(ge=1, le=4)
     quadrimestre: int = Field(ge=1, le=3)
     mes_nome: Optional[str] = None
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "data": "2025-01-01",
+                    "ano": 2025,
+                    "mes": 1,
+                    "trimestre": 1,
+                    "quadrimestre": 1,
+                    "mes_nome": "Janeiro",
+                }
+            ]
+        }
+    }
 
 
 class DimTempoUpdate(BaseModel):

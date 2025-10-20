@@ -5,6 +5,7 @@ from sqlmodel import Session
 from app.core.db import get_session
 from app.services.territorio_service import TerritorioService
 from app.schemas.territorio import DimTerritorioOut, DimTerritorioCreate, DimTerritorioUpdate
+from app.core.security import require_api_key
 
 
 router = APIRouter(prefix="/dw/territorios")
@@ -20,7 +21,7 @@ def list_territorios(
     return service.list(session, limit=limit, offset=offset)
 
 
-@router.post("", response_model=DimTerritorioOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=DimTerritorioOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_api_key)])
 def create_territorio(payload: DimTerritorioCreate, session: Session = Depends(get_session)):
     service = TerritorioService()
     try:
@@ -29,7 +30,7 @@ def create_territorio(payload: DimTerritorioCreate, session: Session = Depends(g
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
-@router.put("/{id}", response_model=DimTerritorioOut)
+@router.put("/{id}", response_model=DimTerritorioOut, dependencies=[Depends(require_api_key)])
 def update_territorio(id: int, payload: DimTerritorioUpdate, session: Session = Depends(get_session)):
     service = TerritorioService()
     try:
@@ -41,7 +42,7 @@ def update_territorio(id: int, payload: DimTerritorioUpdate, session: Session = 
     return updated
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_api_key)])
 def delete_territorio(id: int, session: Session = Depends(get_session)):
     service = TerritorioService()
     ok = service.delete(session, id)

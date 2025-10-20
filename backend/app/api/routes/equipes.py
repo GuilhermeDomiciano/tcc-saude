@@ -4,6 +4,7 @@ from sqlmodel import Session
 from app.core.db import get_session
 from app.services.equipe_service import EquipeService
 from app.schemas.equipe import DimEquipeOut, DimEquipeCreate, DimEquipeUpdate
+from app.core.security import require_api_key
 
 
 router = APIRouter(prefix="/dw/equipes")
@@ -19,7 +20,7 @@ def list_equipes(
     return service.list(session, limit=limit, offset=offset)
 
 
-@router.post("", response_model=DimEquipeOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=DimEquipeOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_api_key)])
 def create_equipe(payload: DimEquipeCreate, session: Session = Depends(get_session)):
     service = EquipeService()
     try:
@@ -28,7 +29,7 @@ def create_equipe(payload: DimEquipeCreate, session: Session = Depends(get_sessi
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
-@router.put("/{id}", response_model=DimEquipeOut)
+@router.put("/{id}", response_model=DimEquipeOut, dependencies=[Depends(require_api_key)])
 def update_equipe(id: int, payload: DimEquipeUpdate, session: Session = Depends(get_session)):
     service = EquipeService()
     try:
@@ -40,11 +41,10 @@ def update_equipe(id: int, payload: DimEquipeUpdate, session: Session = Depends(
     return updated
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_api_key)])
 def delete_equipe(id: int, session: Session = Depends(get_session)):
     service = EquipeService()
     ok = service.delete(session, id)
     if not ok:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Equipe não encontrada")
     return None
-

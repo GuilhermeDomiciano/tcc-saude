@@ -4,6 +4,7 @@ from sqlmodel import Session
 from app.core.db import get_session
 from app.services.fonte_service import FonteService
 from app.schemas.fonte import DimFonteRecursoOut, DimFonteRecursoCreate, DimFonteRecursoUpdate
+from app.core.security import require_api_key
 
 
 router = APIRouter(prefix="/dw/fontes")
@@ -19,7 +20,7 @@ def list_fontes(
     return service.list(session, limit=limit, offset=offset)
 
 
-@router.post("", response_model=DimFonteRecursoOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=DimFonteRecursoOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_api_key)])
 def create_fonte(payload: DimFonteRecursoCreate, session: Session = Depends(get_session)):
     service = FonteService()
     try:
@@ -28,7 +29,7 @@ def create_fonte(payload: DimFonteRecursoCreate, session: Session = Depends(get_
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
-@router.put("/{id}", response_model=DimFonteRecursoOut)
+@router.put("/{id}", response_model=DimFonteRecursoOut, dependencies=[Depends(require_api_key)])
 def update_fonte(id: int, payload: DimFonteRecursoUpdate, session: Session = Depends(get_session)):
     service = FonteService()
     try:
@@ -40,11 +41,10 @@ def update_fonte(id: int, payload: DimFonteRecursoUpdate, session: Session = Dep
     return updated
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_api_key)])
 def delete_fonte(id: int, session: Session = Depends(get_session)):
     service = FonteService()
     ok = service.delete(session, id)
     if not ok:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fonte não encontrada")
     return None
-

@@ -67,9 +67,9 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
 - [x] Paginação padrão (`limit/offset`) e filtros iniciais (ano/mes, territorio_id).
 
 ## 8) Qualidade e Segurança
-- [ ] Tratamento de erros padronizado (HTTPException mensagens claras).
-- [ ] (Opcional MVP) Chave de API simples para métodos de escrita.
-- [ ] OpenAPI tags e exemplos nos endpoints.
+- [x] Tratamento de erros padronizado: `app/core/errors.py` (ValueError→400, IntegrityError→409).
+- [x] Chave de API simples para escrita: header `X-API-Key` (habilita se `API_KEY` definido no ambiente).
+- [x] OpenAPI: exemplos adicionados nos DTOs de criação (tempo/território). Tags já configuradas por rota.
 
 ## 9) Dados de Exemplo (Dev)
 - [x] Seed dev para SQLite em `main.py` (território/unidade/tempo).

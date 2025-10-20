@@ -30,6 +30,9 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    from app.core.errors import register_exception_handlers
+    register_exception_handlers(app)
+
     app.include_router(api_router)
 
     @app.on_event("startup")

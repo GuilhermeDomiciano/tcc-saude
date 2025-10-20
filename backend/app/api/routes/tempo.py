@@ -6,6 +6,7 @@ from sqlmodel import Session
 from app.core.db import get_session
 from app.services.tempo_service import TempoService
 from app.schemas.tempo import DimTempoOut, DimTempoCreate, DimTempoUpdate
+from app.core.security import require_api_key
 
 
 router = APIRouter(prefix="/dw/tempo")
@@ -23,7 +24,7 @@ def list_tempo(
     return service.list(session, limit=limit, offset=offset, ano=ano, mes=mes)
 
 
-@router.post("", response_model=DimTempoOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=DimTempoOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_api_key)])
 def create_tempo(payload: DimTempoCreate, session: Session = Depends(get_session)):
     service = TempoService()
     try:
@@ -34,7 +35,7 @@ def create_tempo(payload: DimTempoCreate, session: Session = Depends(get_session
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
-@router.put("/{id}", response_model=DimTempoOut)
+@router.put("/{id}", response_model=DimTempoOut, dependencies=[Depends(require_api_key)])
 def update_tempo(id: int, payload: DimTempoUpdate, session: Session = Depends(get_session)):
     service = TempoService()
     try:
@@ -48,7 +49,7 @@ def update_tempo(id: int, payload: DimTempoUpdate, session: Session = Depends(ge
     return updated
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_api_key)])
 def delete_tempo(id: int, session: Session = Depends(get_session)):
     service = TempoService()
     ok = service.delete(session, id)

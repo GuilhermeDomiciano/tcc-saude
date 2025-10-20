@@ -6,6 +6,7 @@ from sqlmodel import Session
 from app.core.db import get_session
 from app.services.unidade_service import UnidadeService
 from app.schemas.unidade import DimUnidadeOut, DimUnidadeCreate, DimUnidadeUpdate
+from app.core.security import require_api_key
 
 
 router = APIRouter(prefix="/dw/unidades")
@@ -22,7 +23,7 @@ def list_unidades(
     return service.list(session, limit=limit, offset=offset, uf=uf)
 
 
-@router.post("", response_model=DimUnidadeOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=DimUnidadeOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_api_key)])
 def create_unidade(payload: DimUnidadeCreate, session: Session = Depends(get_session)):
     service = UnidadeService()
     try:
@@ -31,7 +32,7 @@ def create_unidade(payload: DimUnidadeCreate, session: Session = Depends(get_ses
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
-@router.put("/{id}", response_model=DimUnidadeOut)
+@router.put("/{id}", response_model=DimUnidadeOut, dependencies=[Depends(require_api_key)])
 def update_unidade(id: int, payload: DimUnidadeUpdate, session: Session = Depends(get_session)):
     service = UnidadeService()
     try:
@@ -43,7 +44,7 @@ def update_unidade(id: int, payload: DimUnidadeUpdate, session: Session = Depend
     return updated
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_api_key)])
 def delete_unidade(id: int, session: Session = Depends(get_session)):
     service = UnidadeService()
     ok = service.delete(session, id)
