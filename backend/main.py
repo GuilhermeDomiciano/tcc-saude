@@ -5,7 +5,12 @@ from app.core.config import get_settings
 from app.api import api_router
 from app.core.db import engine
 from sqlmodel import SQLModel, Session, select
-from app.models.dev_lite import DevDimTerritorio, DevDimUnidade, DevDimTempo
+from app.models.dev_lite import (
+    DevDimTerritorio,
+    DevDimUnidade,
+    DevDimTempo,
+    DevDimPopFaixaEtaria,
+)
 from datetime import date
 from pathlib import Path
 from sqlalchemy import text as sa_text
@@ -61,6 +66,7 @@ def create_app() -> FastAPI:
                 DevDimTerritorio.__table__,
                 DevDimUnidade.__table__,
                 DevDimTempo.__table__,
+                DevDimPopFaixaEtaria.__table__,
             ])
             with Session(engine) as session:
                 try:
@@ -91,6 +97,18 @@ def create_app() -> FastAPI:
                     session.add_all([
                         DevDimTempo(data=date.fromisoformat("2025-01-01"), ano=2025, mes=1, trimestre=1, quadrimestre=1, mes_nome="Janeiro"),
                         DevDimTempo(data=date.fromisoformat("2025-02-01"), ano=2025, mes=2, trimestre=1, quadrimestre=1, mes_nome="Fevereiro"),
+                    ])
+                    session.commit()
+                try:
+                    exists_pf = session.exec(select(DevDimPopFaixaEtaria).limit(1)).first()
+                except Exception:
+                    exists_pf = None
+                if not exists_pf:
+                    session.add_all([
+                        DevDimPopFaixaEtaria(territorio_id=1, ano=2025, faixa_etaria="0-4", sexo="M", populacao=3500),
+                        DevDimPopFaixaEtaria(territorio_id=1, ano=2025, faixa_etaria="0-4", sexo="F", populacao=3300),
+                        DevDimPopFaixaEtaria(territorio_id=2, ano=2025, faixa_etaria="0-4", sexo="M", populacao=2800),
+                        DevDimPopFaixaEtaria(territorio_id=2, ano=2025, faixa_etaria="0-4", sexo="F", populacao=2700),
                     ])
                     session.commit()
     return app

@@ -3,9 +3,13 @@ from typing import List, Optional
 from sqlmodel import select, Session
 
 from app.models.dw import DimPopFaixaEtaria
+from app.models.dev_lite import DevDimPopFaixaEtaria
 
 
 class PopFaixaRepository:
+    def _model(self, session: Session):
+        dialect = session.get_bind().dialect.name if session.get_bind() else ""
+        return DevDimPopFaixaEtaria if dialect == "sqlite" else DimPopFaixaEtaria
     def list(
         self,
         session: Session,
@@ -15,11 +19,12 @@ class PopFaixaRepository:
         ano: Optional[int] = None,
     ) -> List:
         try:
-            stmt = select(DimPopFaixaEtaria)
+            Model = self._model(session)
+            stmt = select(Model)
             if territorio_id is not None:
-                stmt = stmt.where(DimPopFaixaEtaria.territorio_id == territorio_id)
+                stmt = stmt.where(Model.territorio_id == territorio_id)
             if ano is not None:
-                stmt = stmt.where(DimPopFaixaEtaria.ano == ano)
+                stmt = stmt.where(Model.ano == ano)
             stmt = stmt.offset(offset).limit(limit)
             return list(session.exec(stmt))
         except Exception:
@@ -27,7 +32,8 @@ class PopFaixaRepository:
 
     def get(self, session: Session, id_: int):
         try:
-            return session.get(DimPopFaixaEtaria, id_)
+            Model = self._model(session)
+            return session.get(Model, id_)
         except Exception:
             return None
 
@@ -41,17 +47,18 @@ class PopFaixaRepository:
         sexo: str,
         populacao: int,
     ):
+        Model = self._model(session)
         dup = session.exec(
-            select(DimPopFaixaEtaria).where(
-                DimPopFaixaEtaria.territorio_id == territorio_id,
-                DimPopFaixaEtaria.ano == ano,
-                DimPopFaixaEtaria.faixa_etaria == faixa_etaria,
-                DimPopFaixaEtaria.sexo == sexo,
+            select(Model).where(
+                Model.territorio_id == territorio_id,
+                Model.ano == ano,
+                Model.faixa_etaria == faixa_etaria,
+                Model.sexo == sexo,
             )
         ).first()
         if dup:
             raise ValueError("combination already exists")
-        row = DimPopFaixaEtaria(
+        row = Model(
             territorio_id=territorio_id,
             ano=ano,
             faixa_etaria=faixa_etaria,
@@ -74,7 +81,8 @@ class PopFaixaRepository:
         sexo: Optional[str] = None,
         populacao: Optional[int] = None,
     ):
-        row = session.get(DimPopFaixaEtaria, id_)
+        Model = self._model(session)
+        row = session.get(Model, id_)
         if not row:
             return None
         # If any component of the unique key changes, validate uniqueness
@@ -86,11 +94,11 @@ class PopFaixaRepository:
             new_territorio != row.territorio_id or new_ano != row.ano or new_faixa != row.faixa_etaria or new_sexo != row.sexo
         ):
             dup = session.exec(
-                select(DimPopFaixaEtaria).where(
-                    DimPopFaixaEtaria.territorio_id == new_territorio,
-                    DimPopFaixaEtaria.ano == new_ano,
-                    DimPopFaixaEtaria.faixa_etaria == new_faixa,
-                    DimPopFaixaEtaria.sexo == new_sexo,
+                select(Model).where(
+                    Model.territorio_id == new_territorio,
+                    Model.ano == new_ano,
+                    Model.faixa_etaria == new_faixa,
+                    Model.sexo == new_sexo,
                 )
             ).first()
             if dup:
@@ -111,10 +119,10 @@ class PopFaixaRepository:
         return row
 
     def delete(self, session: Session, id_: int) -> bool:
-        row = session.get(DimPopFaixaEtaria, id_)
+        Model = self._model(session)
+        row = session.get(Model, id_)
         if not row:
             return False
         session.delete(row)
         session.commit()
         return True
-

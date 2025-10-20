@@ -73,7 +73,7 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
 
 ## 9) Dados de Exemplo (Dev)
 - [x] Seed dev para SQLite em `main.py` (território/unidade/tempo).
-- [ ] Acrescentar seed leve para `dim_pop_faixa_etaria`.
+- [x] Acrescentar seed leve para `dim_pop_faixa_etaria` (versão dev `DevDimPopFaixaEtaria`).
 
 ## 10) Testes
 - [ ] Testes unitários de serviços/repositórios (SQLite em memória).

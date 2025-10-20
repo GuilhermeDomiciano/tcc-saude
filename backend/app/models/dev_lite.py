@@ -42,3 +42,12 @@ class DevFatoCoberturaAPS(SQLModel, table=True):
     equipe_id: Optional[int] = None
     tipo_equipe: Optional[str] = None
     cobertura_percentual: Optional[float] = None
+
+
+class DevDimPopFaixaEtaria(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    territorio_id: int
+    ano: int
+    faixa_etaria: str
+    sexo: str  # 'M' | 'F'
+    populacao: int
