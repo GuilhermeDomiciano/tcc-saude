@@ -57,14 +57,14 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
 ## 7) Rotas (API)
 - [x] GET saúde: `/health`.
 - [x] GET listas: `/dw/territorios`, `/dw/unidades`, `/dw/tempo`, `/dw/fatos/cobertura`.
-- [ ] Implementar CRUD das dimensões:
-  - [ ] Território: `GET/POST/PUT/DELETE /dw/territorios`
-  - [ ] Tempo: `GET/POST/PUT/DELETE /dw/tempo`
-  - [ ] População Faixa Etária: `GET/POST/PUT/DELETE /dw/pop-faixa`
-  - [ ] Unidade: `GET/POST/PUT/DELETE /dw/unidades`
-  - [ ] Equipe: `GET/POST/PUT/DELETE /dw/equipes`
-  - [ ] Fonte Recurso: `GET/POST/PUT/DELETE /dw/fontes`
-- [ ] Paginação padrão (`limit/offset`), filtros por campos chave (UF, ano/mes, etc.).
+- [x] Implementar CRUD das dimensões:
+  - [x] Território: `GET/POST/PUT/DELETE /dw/territorios`
+  - [x] Tempo: `GET/POST/PUT/DELETE /dw/tempo`
+  - [x] População Faixa Etária: `GET/POST/PUT/DELETE /dw/pop-faixa`
+  - [x] Unidade: `GET/POST/PUT/DELETE /dw/unidades`
+  - [x] Equipe: `GET/POST/PUT/DELETE /dw/equipes`
+  - [x] Fonte Recurso: `GET/POST/PUT/DELETE /dw/fontes`
+- [x] Paginação padrão (`limit/offset`) e filtros iniciais (ano/mes, territorio_id).
 
 ## 8) Qualidade e Segurança
 - [ ] Tratamento de erros padronizado (HTTPException mensagens claras).

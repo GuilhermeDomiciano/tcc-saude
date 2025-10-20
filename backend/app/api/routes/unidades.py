@@ -1,11 +1,11 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlmodel import Session
 
 from app.core.db import get_session
 from app.services.unidade_service import UnidadeService
-from app.schemas.unidade import DimUnidadeOut
+from app.schemas.unidade import DimUnidadeOut, DimUnidadeCreate, DimUnidadeUpdate
 
 
 router = APIRouter(prefix="/dw/unidades")
@@ -21,3 +21,32 @@ def list_unidades(
     service = UnidadeService()
     return service.list(session, limit=limit, offset=offset, uf=uf)
 
+
+@router.post("", response_model=DimUnidadeOut, status_code=status.HTTP_201_CREATED)
+def create_unidade(payload: DimUnidadeCreate, session: Session = Depends(get_session)):
+    service = UnidadeService()
+    try:
+        return service.create(session, payload)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+
+@router.put("/{id}", response_model=DimUnidadeOut)
+def update_unidade(id: int, payload: DimUnidadeUpdate, session: Session = Depends(get_session)):
+    service = UnidadeService()
+    try:
+        updated = service.update(session, id, payload)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    if not updated:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unidade não encontrada")
+    return updated
+
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_unidade(id: int, session: Session = Depends(get_session)):
+    service = UnidadeService()
+    ok = service.delete(session, id)
+    if not ok:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unidade não encontrada")
+    return None
