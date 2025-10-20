@@ -3,9 +3,12 @@
 Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usados como parâmetros analíticos: tempo, território (IBGE), população por faixa etária/sexo, unidade (CNES), equipe (APS) e fonte de recurso. Esses dados alimentam cálculos posteriores (fatos/relatórios).
 
 ## 1) Fundações e Ambiente
-- [ ] Definir `DATABASE_URL` (dev: SQLite; prod: Postgres/Supabase).
-- [ ] Confirmar CORS `ALLOWED_ORIGINS`.
-- [ ] Instalar deps: `pip install -r backend/requirements.txt`.
+- [x] Definir `DATABASE_URL` (dev: SQLite; prod: Postgres/Supabase).
+  - Use `backend/.env.example` como base (`DATABASE_URL=sqlite:///./dev.db`).
+- [x] Confirmar CORS `ALLOWED_ORIGINS`.
+  - Ajuste no `.env` (ex.: `http://localhost:5173`).
+- [x] Instalar deps: `pip install -r backend/requirements.txt`.
+  - Inclui `python-dotenv` para carregar `.env` automaticamente.
 - [ ] (Opcional prod) Configurar Alembic para migrações.
 
 ## 2) Modelos e Migrações (DW + Stage)
