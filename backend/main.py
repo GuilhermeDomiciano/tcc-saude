@@ -7,6 +7,15 @@ from app.core.db import engine
 from sqlmodel import SQLModel, Session, select
 from app.models.dev_lite import DevDimTerritorio, DevDimUnidade, DevDimTempo
 from datetime import date
+from pathlib import Path
+from sqlalchemy import text as sa_text
+import logging
+try:
+    from alembic.config import Config as AlembicConfig
+    from alembic import command as alembic_command
+except Exception:  # alembic optional in dev
+    AlembicConfig = None
+    alembic_command = None
 
 
 def create_app() -> FastAPI:
@@ -25,8 +34,26 @@ def create_app() -> FastAPI:
 
     @app.on_event("startup")
     def _startup():
-        # SQLite-dev bootstrap: create table and seed minimal data if empty
-        if str(engine.url).startswith("sqlite"):
+        dialect = engine.dialect.name
+
+        # Production path: ensure schemas and run Alembic (Postgres)
+        if dialect in {"postgresql"} and AlembicConfig and alembic_command:
+            try:
+                with engine.begin() as conn:
+                    conn.execute(sa_text("CREATE SCHEMA IF NOT EXISTS dw"))
+                    conn.execute(sa_text("CREATE SCHEMA IF NOT EXISTS stage"))
+            except Exception as e:
+                logging.warning(f"Could not ensure schemas: {e}")
+            try:
+                cfg = AlembicConfig(str((Path(__file__).parent / "alembic.ini").resolve()))
+                cfg.set_main_option("sqlalchemy.url", str(engine.url))
+                cfg.set_main_option("script_location", str((Path(__file__).parent / "alembic").resolve()))
+                alembic_command.upgrade(cfg, "head")
+            except Exception as e:
+                logging.error(f"Alembic upgrade failed: {e}")
+
+        # SQLite-dev bootstrap: create tables and seed minimal data if empty
+        if dialect == "sqlite":
             SQLModel.metadata.create_all(bind=engine, tables=[
                 DevDimTerritorio.__table__,
                 DevDimUnidade.__table__,

@@ -1,0 +1,5 @@
+Alembic migrations live here. Use:
+
+  # Dev: set DATABASE_URL for Postgres before running
+  alembic upgrade head
+

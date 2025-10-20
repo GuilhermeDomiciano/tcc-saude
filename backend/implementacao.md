@@ -13,12 +13,16 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
 
 ## 2) Modelos e Migrações (DW + Stage)
 - [x] Modelos DW e Stage prontos em `app/models/dw.py` e `app/models/stage.py`.
-- [ ] Criar migração inicial (Alembic) com schemas `dw` e `stage` e todas as tabelas necessárias.
+- [x] Criar migração inicial (Alembic) com schemas `dw` e `stage` e todas as tabelas necessárias.
+  - Arquivos: `backend/alembic.ini`, `backend/alembic/env.py`, `backend/alembic/versions/0001_init_dw_stage.py`.
+  - Rodar (Postgres): `cd backend && set DATABASE_URL=postgresql+psycopg://... && alembic upgrade head`.
+  - Observação: a migração cria schemas apenas em Postgres; para SQLite-dev, usar o seed do app.
 - [ ] (Opcional) Criar views utilitárias (`vw_denominador_populacao`, `vw_dim_tempo_flags`, `vw_financas_execucao`).
 
 ## 3) Conexão e Sessão (DB)
 - [x] Engine e sessão em `app/core/db.py` (SQLite-dev; Postgres-prod).
-- [ ] Startup (prod): `create_all` ou `alembic upgrade head` e criação do schema `dw` caso ausente.
+- [x] Startup (prod): `alembic upgrade head` e criação dos schemas `dw`/`stage` caso ausentes.
+  - Implementado em `backend/main.py` (detecta Postgres e roda Alembic automaticamente).
 
 ## 4) Schemas (DTOs)
 - [x] DTOs iniciais: território/tempo em `app/schemas/*`.
