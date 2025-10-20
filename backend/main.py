@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
 from app.api import api_router
+from app.core.db import engine
+from sqlmodel import SQLModel, Session, select
+from app.models.dev_lite import DevDimTerritorio, DevDimUnidade, DevDimTempo
+from datetime import date
 
 
 def create_app() -> FastAPI:
@@ -18,8 +22,48 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(api_router)
+
+    @app.on_event("startup")
+    def _startup():
+        # SQLite-dev bootstrap: create table and seed minimal data if empty
+        if str(engine.url).startswith("sqlite"):
+            SQLModel.metadata.create_all(bind=engine, tables=[
+                DevDimTerritorio.__table__,
+                DevDimUnidade.__table__,
+                DevDimTempo.__table__,
+            ])
+            with Session(engine) as session:
+                try:
+                    exists = session.exec(select(DevDimTerritorio).limit(1)).first()
+                except Exception:
+                    exists = None
+                if not exists:
+                    session.add_all([
+                        DevDimTerritorio(cod_ibge_municipio="4300000", nome="Municipio A", uf="RS"),
+                        DevDimTerritorio(cod_ibge_municipio="4200000", nome="Municipio B", uf="SC"),
+                    ])
+                    session.commit()
+                try:
+                    exists_u = session.exec(select(DevDimUnidade).limit(1)).first()
+                except Exception:
+                    exists_u = None
+                if not exists_u:
+                    session.add_all([
+                        DevDimUnidade(cnes="0000001", nome="UBS Central", territorio_id=1, tipo_estabelecimento="UBS", bairro="Centro", gestao="Municipal"),
+                        DevDimUnidade(cnes="0000002", nome="USF Norte", territorio_id=2, tipo_estabelecimento="USF", bairro="Norte", gestao="Municipal"),
+                    ])
+                    session.commit()
+                try:
+                    exists_t = session.exec(select(DevDimTempo).limit(1)).first()
+                except Exception:
+                    exists_t = None
+                if not exists_t:
+                    session.add_all([
+                        DevDimTempo(data=date.fromisoformat("2025-01-01"), ano=2025, mes=1, trimestre=1, quadrimestre=1, mes_nome="Janeiro"),
+                        DevDimTempo(data=date.fromisoformat("2025-02-01"), ano=2025, mes=2, trimestre=1, quadrimestre=1, mes_nome="Fevereiro"),
+                    ])
+                    session.commit()
     return app
 
 
 app = create_app()
-
