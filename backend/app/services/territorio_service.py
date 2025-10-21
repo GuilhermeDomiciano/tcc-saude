@@ -40,6 +40,9 @@ class TerritorioService:
                 area_km2=r.area_km2,
                 pop_censo_2022=r.pop_censo_2022,
                 pop_estim_2024=r.pop_estim_2024,
+                fonte="IBGE",
+                periodo="2022/2024",
+                versao="dev-seed",
             )
             for r in rows
         ]
@@ -56,6 +59,9 @@ class TerritorioService:
             area_km2=r.area_km2,
             pop_censo_2022=r.pop_censo_2022,
             pop_estim_2024=r.pop_estim_2024,
+            fonte="IBGE",
+            periodo="2022/2024",
+            versao="dev-seed",
         )
 
     def create(self, session: Session, payload: DimTerritorioCreate) -> DimTerritorioOut:
@@ -78,6 +84,9 @@ class TerritorioService:
             area_km2=row.area_km2,
             pop_censo_2022=row.pop_censo_2022,
             pop_estim_2024=row.pop_estim_2024,
+            fonte="IBGE",
+            periodo="2022/2024",
+            versao="dev-seed",
         )
 
     def update(self, session: Session, id_: int, payload: DimTerritorioUpdate) -> Optional[DimTerritorioOut]:

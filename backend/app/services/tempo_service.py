@@ -28,6 +28,9 @@ class TempoService:
                 trimestre=getattr(r, "trimestre", 0),
                 quadrimestre=getattr(r, "quadrimestre", 0),
                 mes_nome=getattr(r, "mes_nome", None),
+                fonte="Calendário",
+                periodo=f"{getattr(r, 'ano', 0)}-{getattr(r, 'mes', 0):02d}",
+                versao="dev-seed",
             )
             for r in rows
         ]
@@ -65,6 +68,9 @@ class TempoService:
             trimestre=row.trimestre,
             quadrimestre=row.quadrimestre,
             mes_nome=row.mes_nome,
+            fonte="Calendário",
+            periodo=f"{row.ano}-{row.mes:02d}",
+            versao="dev-seed",
         )
 
     def update(self, session: Session, id_: int, payload: DimTempoUpdate) -> Optional[DimTempoOut]:
@@ -89,6 +95,9 @@ class TempoService:
             trimestre=row.trimestre,
             quadrimestre=row.quadrimestre,
             mes_nome=row.mes_nome,
+            fonte="Calendário",
+            periodo=f"{row.ano}-{row.mes:02d}",
+            versao="dev-seed",
         )
 
     def delete(self, session: Session, id_: int) -> bool:

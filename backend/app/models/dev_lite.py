@@ -51,3 +51,17 @@ class DevDimPopFaixaEtaria(SQLModel, table=True):
     faixa_etaria: str
     sexo: str  # 'M' | 'F'
     populacao: int
+
+class DevDimFonteRecurso(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    codigo: str
+    descricao: str
+
+
+class DevDimEquipe(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    id_equipe: str
+    tipo: Optional[str] = None  # ESF/ESB/ACS/OUTROS
+    unidade_id: Optional[int] = None
+    territorio_id: Optional[int] = None
+    ativo: bool = True

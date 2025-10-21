@@ -2,13 +2,18 @@ from typing import List, Optional
 
 from sqlmodel import select, Session
 
-from app.models.dw import DimEquipe
+from app.models.dw import DimEquipe; from app.models.dev_lite import DevDimEquipe
 
 
 class EquipeRepository:
+    def _model(self, session: Session):
+        dialect = session.get_bind().dialect.name if session.get_bind() else ''
+        return DevDimEquipe if dialect == 'sqlite' else DimEquipe
+    
     def list(self, session: Session, limit: int = 50, offset: int = 0, tipo: Optional[str] = None, ativo: Optional[bool] = None) -> List:
         try:
-            stmt = select(DimEquipe)
+            Model = self._model(session)
+            stmt = select(Model)
             if tipo:
                 stmt = stmt.where(DimEquipe.tipo == tipo)
                 if ativo is not None:
@@ -20,7 +25,7 @@ class EquipeRepository:
 
     def get(self, session: Session, id_: int):
         try:
-            return session.get(DimEquipe, id_)
+            return session.get(Model, id_)
         except Exception:
             return None
 
@@ -34,10 +39,10 @@ class EquipeRepository:
         territorio_id: Optional[int],
         ativo: bool,
     ):
-        dup = session.exec(select(DimEquipe).where(DimEquipe.id_equipe == id_equipe)).first()
+        dup = session.exec(select(Model).where(DimEquipe.id_equipe == id_equipe)).first()
         if dup:
             raise ValueError("id_equipe already exists")
-        row = DimEquipe(
+        row = Model(
             id_equipe=id_equipe,
             tipo=tipo,
             unidade_id=unidade_id,
@@ -60,11 +65,11 @@ class EquipeRepository:
         territorio_id: Optional[int] = None,
         ativo: Optional[bool] = None,
     ):
-        row = session.get(DimEquipe, id_)
+        row = session.get(Model, id_)
         if not row:
             return None
         if id_equipe and id_equipe != row.id_equipe:
-            dup = session.exec(select(DimEquipe).where(DimEquipe.id_equipe == id_equipe)).first()
+            dup = session.exec(select(Model).where(DimEquipe.id_equipe == id_equipe)).first()
             if dup:
                 raise ValueError("id_equipe already exists")
             row.id_equipe = id_equipe
@@ -82,11 +87,13 @@ class EquipeRepository:
         return row
 
     def delete(self, session: Session, id_: int) -> bool:
-        row = session.get(DimEquipe, id_)
+        row = session.get(Model, id_)
         if not row:
             return False
         session.delete(row)
         session.commit()
         return True
+
+
 
 
