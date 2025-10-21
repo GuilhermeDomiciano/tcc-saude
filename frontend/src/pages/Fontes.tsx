@@ -1,15 +1,21 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
-import { listFontes } from '../lib/api'
+import { listFontes, deleteFonte } from '../lib/api'
 import type { DimFonteRecurso } from '../lib/types'
 
 export default function Fontes() {
   const [codigo, setCodigo] = useState<string>('')
   const [limit, setLimit] = useState<number>(10)
   const [offset, setOffset] = useState<number>(0)
+  // removed legacy delete-by-id control in favor of row actions
+  const queryClient = useQueryClient()
+  const delMut = useMutation({
+    mutationFn: (id: number) => deleteFonte(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['fontes'] }),
+  })
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['fontes', { codigo, limit, offset }],
@@ -21,6 +27,14 @@ export default function Fontes() {
       { header: 'ID', accessorKey: 'id' },
       { header: 'Código', accessorKey: 'codigo' },
       { header: 'Descrição', accessorKey: 'descricao' },
+      {
+        header: 'Ações',
+        cell: ({ row }) => (
+          <button className="no-print rounded-md border px-2 py-0.5 text-xs" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>
+            Excluir
+          </button>
+        ),
+      },
       {
         header: 'Proveniência',
         cell: ({ row }) => (
@@ -82,6 +96,8 @@ export default function Fontes() {
         error={(error as Error | undefined)?.message ?? null}
       />
 
+      
+
       <div className="no-print flex items-center justify-between">
         <button
           className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
@@ -101,4 +117,5 @@ export default function Fontes() {
     </section>
   )
 }
+
 

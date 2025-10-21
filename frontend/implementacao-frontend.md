@@ -37,15 +37,15 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 - [x] Após sucesso, invalidar queries (React Query) e fechar modal.
 
 ## 7) Exclusão (DELETE)
-- [ ] Diálogo de confirmação → DELETE → refetch da lista.
+- [x] Diálogo de confirmação → DELETE → refetch da lista. (Implementado com botão de exclusão por ID nas listas)
 
 ## 8) RDQA: Páginas e Exportação
-- [ ] Criar páginas dos Quadros RDQA com layout de impressão (A4) e variações por período/município.
-- [ ] Exportação em PDF com QR Code de verificação:
+- [x] Criar páginas dos Quadros RDQA com layout de impressão (A4) e variações por período/município.
+- [x] Exportação em PDF com QR Code de verificação:
   - Opção A (recomendada): chamar endpoint do backend `POST /rdqa/export/pdf` (Pyppeteer) a partir do HTML da página; usar headers `X-Exec-Id`/`X-Hash` no QR.
   - Opção B (fallback): `window.print()` com estilos de impressão ou lib client-side, garantindo fidelidade mínima.
-- [ ] QR Code aponta para URL verificável do backend: `/public/verificar?exec_id=...&hash=...`.
-- [ ] Inserir metadados no rodapé (fonte/periodicidade/versão, data/hora da geração).
+- [x] QR Code aponta para URL verificável do backend: `/public/verificar?exec_id=...&hash=...`.
+- [x] Inserir metadados no rodapé (fonte/periodicidade/versão, data/hora da geração).
 
 ## 9) UX, A11y e Qualidade
 - [ ] Focus management nos modais; labels/aria; navegação por teclado.
@@ -69,3 +69,5 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 - [ ] QR Code nos PDFs para verificação pública do conteúdo (rastreabilidade ponta a ponta).
 - [ ] Páginas RDQA compõem as figuras/tabelas do paper (prints podem ser usados como anexos).
 - [ ] Estilos de impressão garantem legibilidade e aderência a A4.
+
+

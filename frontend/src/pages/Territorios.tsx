@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
-import { listTerritorios } from '../lib/api'
+import { listTerritorios, deleteTerritorio } from '../lib/api'
 import type { DimTerritorio } from '../lib/types'
 import Modal from '../components/Modal'
 import TerritorioForm from '../components/forms/TerritorioForm'
@@ -13,6 +13,12 @@ export default function Territorios() {
   const [ibge, setIbge] = useState<string>('')
   const [limit, setLimit] = useState<number>(10)
   const [offset, setOffset] = useState<number>(0)
+  // removed legacy delete-by-id control in favor of row actions
+  const queryClient = useQueryClient()
+  const delMut = useMutation({
+    mutationFn: (id: number) => deleteTerritorio(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['territorios'] }),
+  })
   const [showCreate, setShowCreate] = useState(false)
   const [editing, setEditing] = useState<DimTerritorio | null>(null)
 
@@ -39,9 +45,10 @@ export default function Territorios() {
       {
         header: 'Ações',
         cell: ({ row }) => (
-          <button className="no-print rounded-md border px-2 py-0.5 text-xs" onClick={() => setEditing(row.original)}>
-            Editar
-          </button>
+          <div className="no-print flex gap-2">
+            <button className="rounded-md border px-2 py-0.5 text-xs" onClick={() => setEditing(row.original)}>Editar</button>
+            <button className="rounded-md border px-2 py-0.5 text-xs" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>Excluir</button>
+          </div>
         ),
       },
       {
@@ -65,6 +72,8 @@ export default function Territorios() {
       <div className="prose max-w-none dark:prose-invert">
         <h2>Dimensão: Territórios</h2>
       </div>
+
+      
 
       <div className="no-print flex flex-wrap items-end gap-3">
         <label className="text-sm">

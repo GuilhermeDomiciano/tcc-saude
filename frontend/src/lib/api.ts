@@ -65,11 +65,23 @@ export type ExportPdfPayload = {
 }
 
 export async function exportRDQAPdf(payload: ExportPdfPayload): Promise<{ blob: Blob; execId?: string; hash?: string }> {
-  const res = await api.post(routes.rdqaExportPdf, payload, { responseType: 'blob' })
-  const execId = res.headers?.['x-exec-id'] as string | undefined
-  const hash = res.headers?.['x-hash'] as string | undefined
-  const blob: Blob = res.data
-  return { blob, execId, hash }
+  try {
+    const res = await api.post(routes.rdqaExportPdf, payload, { responseType: 'blob' })
+    const execId = res.headers?.['x-exec-id'] as string | undefined
+    const hash = res.headers?.['x-hash'] as string | undefined
+    const blob: Blob = res.data
+    return { blob, execId, hash }
+  } catch (err) {
+    if (isAxiosErrorNarrow(err) && err.response?.data instanceof Blob) {
+      try {
+        const text = await err.response.data.text()
+        throw new Error(`Exportação PDF falhou (${err.response.status}): ${text}`)
+      } catch {
+        throw err
+      }
+    }
+    throw err
+  }
 }
 
 import type { DimTempoCreate, DimTempoUpdate, DimTerritorioCreate, DimTerritorioUpdate } from './types'
@@ -90,4 +102,23 @@ export async function createTerritorio(body: DimTerritorioCreate) {
 export async function updateTerritorio(id: number, body: DimTerritorioUpdate) {
   const res = await api.put(`${routes.territorios}/${id}`, body)
   return res.data
+}
+
+export async function deleteTempo(id: number) {
+  await api.delete(`${routes.tempo}/${id}`)
+}
+export async function deleteTerritorio(id: number) {
+  await api.delete(`${routes.territorios}/${id}`)
+}
+export async function deleteUnidade(id: number) {
+  await api.delete(`${routes.unidades}/${id}`)
+}
+export async function deleteEquipe(id: number) {
+  await api.delete(`${routes.equipes}/${id}`)
+}
+export async function deleteFonte(id: number) {
+  await api.delete(`${routes.fontes}/${id}`)
+}
+export async function deletePopFaixa(id: number) {
+  await api.delete(`${routes.popFaixa}/${id}`)
 }

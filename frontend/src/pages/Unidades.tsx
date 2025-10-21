@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
-import { listUnidades } from '../lib/api'
+import { listUnidades, deleteUnidade } from '../lib/api'
 import type { DimUnidade } from '../lib/types'
 
 export default function Unidades() {
@@ -11,6 +11,12 @@ export default function Unidades() {
   const [territorio, setTerritorio] = useState<string>('')
   const [limit, setLimit] = useState<number>(10)
   const [offset, setOffset] = useState<number>(0)
+  // removed legacy delete-by-id control in favor of row actions
+  const queryClient = useQueryClient()
+  const delMut = useMutation({
+    mutationFn: (id: number) => deleteUnidade(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['unidades'] }),
+  })
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['unidades', { cnes, territorio, limit, offset }],
@@ -33,6 +39,14 @@ export default function Unidades() {
       { header: 'Território', accessorKey: 'territorio_id' },
       { header: 'Gestão', accessorKey: 'gestao' },
       {
+        header: 'Ações',
+        cell: ({ row }) => (
+          <button className="no-print rounded-md border px-2 py-0.5 text-xs" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>
+            Excluir
+          </button>
+        ),
+      },
+      {
         header: 'Proveniência',
         cell: ({ row }) => (
           <ProvenanceBadges
@@ -53,6 +67,8 @@ export default function Unidades() {
       <div className="prose max-w-none dark:prose-invert">
         <h2>Dimensão: Unidades</h2>
       </div>
+
+      
 
       <div className="no-print flex flex-wrap items-end gap-3">
         <label className="text-sm">
@@ -125,4 +141,5 @@ export default function Unidades() {
     </section>
   )
 }
+
 

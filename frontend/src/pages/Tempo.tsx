@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
-import { listTempo } from '../lib/api'
+import { listTempo, deleteTempo } from '../lib/api'
 import type { DimTempo } from '../lib/types'
 import Modal from '../components/Modal'
 import TempoForm from '../components/forms/TempoForm'
@@ -14,6 +14,12 @@ export default function Tempo() {
   const [limit, setLimit] = useState<number>(10)
   const [offset, setOffset] = useState<number>(0)
   const [showCreate, setShowCreate] = useState(false)
+  const [deleteId, setDeleteId] = useState<string>('')
+  const queryClient = useQueryClient()
+  const delMut = useMutation({
+    mutationFn: (id: number) => deleteTempo(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tempo'] }),
+  })
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['tempo', { ano, mes, limit, offset }],
@@ -43,6 +49,19 @@ export default function Tempo() {
             periodo={row.original.periodo}
             versao={row.original.versao}
           />
+        ),
+      },
+      {
+        header: 'Ações',
+        cell: ({ row }) => (
+          <button
+            className="no-print rounded-md border px-2 py-0.5 text-xs"
+            onClick={() => {
+              if (confirm('Excluir este registro?')) delMut.mutate(row.original.id)
+            }}
+          >
+            Excluir
+          </button>
         ),
       },
     ],
@@ -107,6 +126,32 @@ export default function Tempo() {
 
       <div className="no-print">
         <button onClick={() => setShowCreate(true)} className="rounded-md border bg-primary px-3 py-1 text-sm text-primary-foreground">Novo</button>
+      </div>
+
+      <div className="no-print flex items-end gap-2">
+        <label className="text-sm">
+          <span className="block text-muted-foreground">Excluir por ID</span>
+          <input
+            type="number"
+            className="w-28 rounded-md border bg-background px-2 py-1"
+            value={deleteId}
+            onChange={(e) => setDeleteId(e.target.value)}
+            placeholder="id"
+          />
+        </label>
+        <button
+          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+          disabled={!deleteId || delMut.isPending}
+          onClick={() => {
+            const id = Number(deleteId)
+            if (!Number.isFinite(id)) return
+            if (confirm('Confirmar exclusão?')) {
+              delMut.mutate(id, { onSuccess: () => setDeleteId('') })
+            }
+          }}
+        >
+          Excluir
+        </button>
       </div>
 
       <DataTable<DimTempo>

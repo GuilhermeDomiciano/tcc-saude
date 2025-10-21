@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
-import { listEquipes } from '../lib/api'
+import { listEquipes, deleteEquipe } from '../lib/api'
 import type { DimEquipe } from '../lib/types'
 
 export default function Equipes() {
@@ -11,6 +11,11 @@ export default function Equipes() {
   const [ativo, setAtivo] = useState<string>('')
   const [limit, setLimit] = useState<number>(10)
   const [offset, setOffset] = useState<number>(0)
+  const queryClient = useQueryClient()
+  const delMut = useMutation({
+    mutationFn: (id: number) => deleteEquipe(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['equipes'] }),
+  })
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['equipes', { tipo, ativo, limit, offset }],
@@ -32,6 +37,14 @@ export default function Equipes() {
       { header: 'Território', accessorKey: 'territorio_id' },
       { header: 'Ativo', accessorKey: 'ativo' },
       {
+        header: 'Ações',
+        cell: ({ row }) => (
+          <button className="no-print rounded-md border px-2 py-0.5 text-xs" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>
+            Excluir
+          </button>
+        ),
+      },
+      {
         header: 'Proveniência',
         cell: ({ row }) => (
           <ProvenanceBadges
@@ -52,6 +65,8 @@ export default function Equipes() {
       <div className="prose max-w-none dark:prose-invert">
         <h2>Dimensão: Equipes</h2>
       </div>
+
+      
 
       <div className="no-print flex flex-wrap items-end gap-3">
         <label className="text-sm">
@@ -132,4 +147,5 @@ export default function Equipes() {
     </section>
   )
 }
+
 
