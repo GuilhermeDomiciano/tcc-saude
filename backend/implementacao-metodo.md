@@ -34,12 +34,12 @@ Objetivo: detalhar, em passos executáveis, as funcionalidades adicionais do mé
   - `backend/tests/test_rdqa_consistencia.py`.
 
 ## 3) Cobertura RDQA
-- [ ] Modelagem (opcional, se necessário): tabela de controle de geração por quadro.
+- [x] Modelagem (opcional, se necessário): tabela de controle de geração por quadro.
   - `dw.rdqa_quadro_execucao`: `quadro`, `periodo`, `territorio_id` (ou escopo), `status` (`gerado`/`faltando`), `motivo`, `created_at`.
-- [ ] Serviço: computar `%` de quadros gerados e listar faltantes com motivo.
+- [x] Serviço: computar `%` de quadros gerados e listar faltantes com motivo.
   - `app/services/rdqa_cobertura_service.py` com `cobertura(periodo, filtros)`.
-- [ ] Rota API: `GET /rdqa/cobertura?periodo&...` retornando `{ percent, total, gerados, faltantes: [{quadro, motivo}] }`.
-- [ ] Testes: diferentes combinações (0%, parcial, 100%).
+- [x] Rota API: `GET /rdqa/cobertura?periodo&...` retornando `{ percent, total, gerados, faltantes: [{quadro, motivo}] }`.
+- [x] Testes: diferentes combinações (0%, parcial, 100%).
   - `backend/tests/test_rdqa_cobertura.py`.
 
 ## 4) Diff entre Ciclos (Atual vs Anterior)

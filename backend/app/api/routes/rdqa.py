@@ -10,6 +10,7 @@ from app.core.db import get_session
 from app.services.rdqa_export_service import RDQAExportService
 from app.services.artefato_service import ArtefatoService
 from app.services.consistencia_service import ConsistenciaService
+from app.services.rdqa_cobertura_service import RDQACoberturaService
 
 
 router = APIRouter(prefix="/rdqa")
@@ -25,6 +26,7 @@ class ExportPDFIn(BaseModel):
 exporter = RDQAExportService()
 artefatos = ArtefatoService()
 consistencia = ConsistenciaService()
+rdqa_cobertura = RDQACoberturaService()
 
 
 @router.post(
@@ -86,3 +88,8 @@ def listar_consistencia(periodo: Optional[str] = None, session: Session = Depend
 @router.get("/consistencia/{indicador}/detalhes")
 def detalhes_consistencia(indicador: str, periodo: Optional[str] = None, session: Session = Depends(get_session)):
     return consistencia.drill_down(session, indicador, periodo)
+
+
+@router.get("/cobertura")
+def obter_cobertura(periodo: Optional[str] = None, session: Session = Depends(get_session)):
+    return rdqa_cobertura.cobertura(session, periodo)
