@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session
 
@@ -14,10 +15,11 @@ router = APIRouter(prefix="/dw/fontes")
 def list_fontes(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
+    codigo: Optional[str] = Query(None),
     session: Session = Depends(get_session),
 ):
     service = FonteService()
-    return service.list(session, limit=limit, offset=offset)
+    return service.list(session, limit=limit, offset=offset, codigo=codigo)
 
 
 @router.post("", response_model=DimFonteRecursoOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_api_key)])

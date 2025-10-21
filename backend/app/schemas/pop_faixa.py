@@ -28,4 +28,8 @@ class DimPopFaixaEtariaOut(BaseModel):
     faixa_etaria: str
     sexo: SexoLiteral
     populacao: int
-
+    fonte: Optional[str] = None
+    periodo: Optional[str] = None
+    versao: Optional[str] = None
+    hash: Optional[str] = None
+    exec_id: Optional[str] = None

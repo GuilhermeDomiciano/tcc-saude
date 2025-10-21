@@ -10,8 +10,8 @@ class EquipeService:
     def __init__(self, repo: EquipeRepository | None = None):
         self.repo = repo or EquipeRepository()
 
-    def list(self, session: Session, limit: int = 50, offset: int = 0) -> List[DimEquipeOut]:
-        rows = self.repo.list(session, limit=limit, offset=offset)
+    def list(self, session: Session, limit: int = 50, offset: int = 0, tipo: Optional[str] = None, ativo: Optional[bool] = None) -> List[DimEquipeOut]:
+        rows = self.repo.list(session, limit=limit, offset=offset, tipo=tipo, ativo=ativo)
         return [
             DimEquipeOut(
                 id=r.id,
@@ -78,4 +78,5 @@ class EquipeService:
 
     def delete(self, session: Session, id_: int) -> bool:
         return self.repo.delete(session, id_)
+
 

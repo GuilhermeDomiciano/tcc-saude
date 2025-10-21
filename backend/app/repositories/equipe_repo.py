@@ -6,9 +6,14 @@ from app.models.dw import DimEquipe
 
 
 class EquipeRepository:
-    def list(self, session: Session, limit: int = 50, offset: int = 0) -> List:
+    def list(self, session: Session, limit: int = 50, offset: int = 0, tipo: Optional[str] = None, ativo: Optional[bool] = None) -> List:
         try:
-            stmt = select(DimEquipe).offset(offset).limit(limit)
+            stmt = select(DimEquipe)
+            if tipo:
+                stmt = stmt.where(DimEquipe.tipo == tipo)
+                if ativo is not None:
+                    stmt = stmt.where(DimEquipe.ativo == ativo)
+                    stmt = stmt.offset(offset).limit(limit)
             return list(session.exec(stmt))
         except Exception:
             return []
@@ -83,4 +88,5 @@ class EquipeRepository:
         session.delete(row)
         session.commit()
         return True
+
 

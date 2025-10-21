@@ -17,10 +17,12 @@ def list_unidades(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     uf: Optional[str] = Query(None, min_length=2, max_length=2),
+    cnes: Optional[str] = Query(None),
+    territorio_id: Optional[int] = Query(None, ge=1),
     session: Session = Depends(get_session),
-):
+    ):
     service = UnidadeService()
-    return service.list(session, limit=limit, offset=offset, uf=uf)
+    return service.list(session, limit=limit, offset=offset, uf=uf, cnes=cnes, territorio_id=territorio_id)
 
 
 @router.post("", response_model=DimUnidadeOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_api_key)])
@@ -51,3 +53,5 @@ def delete_unidade(id: int, session: Session = Depends(get_session)):
     if not ok:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unidade não encontrada")
     return None
+
+

@@ -28,4 +28,8 @@ class DimEquipeOut(BaseModel):
     unidade_id: Optional[int] = None
     territorio_id: Optional[int] = None
     ativo: bool
-
+    fonte: Optional[str] = None
+    periodo: Optional[str] = None
+    versao: Optional[str] = None
+    hash: Optional[str] = None
+    exec_id: Optional[str] = None

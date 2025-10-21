@@ -42,3 +42,8 @@ class DimTempoOut(BaseModel):
     trimestre: int
     quadrimestre: int
     mes_nome: Optional[str] = None
+    fonte: Optional[str] = None
+    periodo: Optional[str] = None
+    versao: Optional[str] = None
+    hash: Optional[str] = None
+    exec_id: Optional[str] = None

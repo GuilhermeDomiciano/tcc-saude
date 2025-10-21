@@ -52,3 +52,8 @@ class DimTerritorioOut(BaseModel):
     area_km2: Optional[float] = None
     pop_censo_2022: Optional[int] = None
     pop_estim_2024: Optional[int] = None
+    fonte: Optional[str] = None
+    periodo: Optional[str] = None
+    versao: Optional[str] = None
+    hash: Optional[str] = None
+    exec_id: Optional[str] = None

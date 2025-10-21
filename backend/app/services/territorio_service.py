@@ -22,8 +22,15 @@ class TerritorioService:
         if len(s) not in (6, 7) or not s.isdigit():
             raise ValueError("cod_ibge_municipio inválido (6-7 dígitos)")
 
-    def list(self, session: Session, limit: int = 50, offset: int = 0) -> List[DimTerritorioOut]:
-        rows = self.repo.list(session, limit=limit, offset=offset)
+    def list(
+        self,
+        session: Session,
+        limit: int = 50,
+        offset: int = 0,
+        uf: Optional[str] = None,
+        cod_ibge_municipio: Optional[str] = None,
+    ) -> List[DimTerritorioOut]:
+        rows = self.repo.list(session, limit=limit, offset=offset, uf=uf, cod_ibge_municipio=cod_ibge_municipio)
         return [
             DimTerritorioOut(
                 id=r.id,

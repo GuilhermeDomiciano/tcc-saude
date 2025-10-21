@@ -6,9 +6,13 @@ from app.models.dw import DimFonteRecurso
 
 
 class FonteRepository:
-    def list(self, session: Session, limit: int = 50, offset: int = 0) -> List:
+    def list(self, session: Session, limit: int = 50, offset: int = 0, codigo: Optional[str] = None) -> List:
         try:
-            stmt = select(DimFonteRecurso).offset(offset).limit(limit)
+            stmt = select(DimFonteRecurso)
+            if codigo:
+                like = f"{codigo}%"
+                stmt = stmt.where(DimFonteRecurso.codigo.like(like))
+            stmt = stmt.offset(offset).limit(limit)
             return list(session.exec(stmt))
         except Exception:
             return []
@@ -52,4 +56,3 @@ class FonteRepository:
         session.delete(row)
         session.commit()
         return True
-

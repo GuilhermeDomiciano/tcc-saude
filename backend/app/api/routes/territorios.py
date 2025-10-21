@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 
 from sqlmodel import Session
@@ -15,10 +16,12 @@ router = APIRouter(prefix="/dw/territorios")
 def list_territorios(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
+    uf: Optional[str] = Query(None, min_length=2, max_length=2),
+    cod_ibge_municipio: Optional[str] = Query(None, min_length=1, max_length=7),
     session: Session = Depends(get_session),
 ):
     service = TerritorioService()
-    return service.list(session, limit=limit, offset=offset)
+    return service.list(session, limit=limit, offset=offset, uf=uf, cod_ibge_municipio=cod_ibge_municipio)
 
 
 @router.post("", response_model=DimTerritorioOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_api_key)])

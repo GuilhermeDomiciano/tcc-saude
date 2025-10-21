@@ -10,8 +10,16 @@ class UnidadeService:
     def __init__(self, repo: UnidadeRepository | None = None):
         self.repo = repo or UnidadeRepository()
 
-    def list(self, session: Session, limit: int = 50, offset: int = 0, uf: Optional[str] = None) -> List[DimUnidadeOut]:
-        rows = self.repo.list(session, limit=limit, offset=offset, uf=uf)
+    def list(
+        self,
+        session: Session,
+        limit: int = 50,
+        offset: int = 0,
+        uf: Optional[str] = None,
+        cnes: Optional[str] = None,
+        territorio_id: Optional[int] = None,
+    ) -> List[DimUnidadeOut]:
+        rows = self.repo.list(session, limit=limit, offset=offset, uf=uf, cnes=cnes, territorio_id=territorio_id)
         return [
             DimUnidadeOut(
                 id=r.id,

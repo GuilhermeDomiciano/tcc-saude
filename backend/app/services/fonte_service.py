@@ -10,8 +10,8 @@ class FonteService:
     def __init__(self, repo: FonteRepository | None = None):
         self.repo = repo or FonteRepository()
 
-    def list(self, session: Session, limit: int = 50, offset: int = 0) -> List[DimFonteRecursoOut]:
-        rows = self.repo.list(session, limit=limit, offset=offset)
+    def list(self, session: Session, limit: int = 50, offset: int = 0, codigo: Optional[str] = None) -> List[DimFonteRecursoOut]:
+        rows = self.repo.list(session, limit=limit, offset=offset, codigo=codigo)
         return [
             DimFonteRecursoOut(id=r.id, codigo=r.codigo, descricao=r.descricao)
             for r in rows
@@ -40,4 +40,3 @@ class FonteService:
 
     def delete(self, session: Session, id_: int) -> bool:
         return self.repo.delete(session, id_)
-

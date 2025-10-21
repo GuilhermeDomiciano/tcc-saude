@@ -12,10 +12,23 @@ class TerritorioRepository:
         dialect = session.get_bind().dialect.name if session.get_bind() else ""
         return DevDimTerritorio if dialect == "sqlite" else DimTerritorio
 
-    def list(self, session: Session, limit: int = 50, offset: int = 0) -> List:
+    def list(
+        self,
+        session: Session,
+        limit: int = 50,
+        offset: int = 0,
+        uf: Optional[str] = None,
+        cod_ibge_municipio: Optional[str] = None,
+    ) -> List:
         try:
             Model = self._model(session)
-            stmt = select(Model).offset(offset).limit(limit)
+            stmt = select(Model)
+            if uf:
+                stmt = stmt.where(Model.uf == uf)
+            if cod_ibge_municipio:
+                like = f"{cod_ibge_municipio}%"
+                stmt = stmt.where(Model.cod_ibge_municipio.like(like))
+            stmt = stmt.offset(offset).limit(limit)
             return list(session.exec(stmt))
         except Exception:
             return []

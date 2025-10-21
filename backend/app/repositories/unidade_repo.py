@@ -12,10 +12,25 @@ class UnidadeRepository:
         dialect = session.get_bind().dialect.name if session.get_bind() else ""
         return DevDimUnidade if dialect == "sqlite" else DimUnidade
 
-    def list(self, session: Session, limit: int = 50, offset: int = 0, uf: Optional[str] = None) -> List:
+    def list(
+        self,
+        session: Session,
+        limit: int = 50,
+        offset: int = 0,
+        uf: Optional[str] = None,
+        cnes: Optional[str] = None,
+        territorio_id: Optional[int] = None,
+    ) -> List:
         try:
             Model = self._model(session)
-            stmt = select(Model).offset(offset).limit(limit)
+            stmt = select(Model)
+            if cnes:
+                like = f"{cnes}%"
+                stmt = stmt.where(Model.cnes.like(like))
+            if territorio_id is not None:
+                stmt = stmt.where(Model.territorio_id == territorio_id)
+            # Nota: filtro por UF exigiria join com território; manteremos pelo cnes/territorio_id
+            stmt = stmt.offset(offset).limit(limit)
             return list(session.exec(stmt))
         except Exception:
             return []

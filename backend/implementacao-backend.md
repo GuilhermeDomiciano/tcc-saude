@@ -85,3 +85,16 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
 - [x] Documentar rotas e exemplos no README do backend (`backend/README.md`).
 - [x] Preparar `alembic.ini`/migrations para deploy (prod: Postgres/Supabase).
   - Startup em Postgres cria schemas e roda `alembic upgrade head` automaticamente.
+
+-## 12) Alinhamento adicional com o Frontend/JIC
+- [x] DTOs `Out` com Proveniência: adicionar campos opcionais `fonte`, `periodo`, `versao` (e, quando houver, `hash`, `exec_id`) nas respostas das dimensões.
+- [x] Filtros adicionais nas listas:
+  - Territórios: `uf`, `cod_ibge_municipio`.
+  - Unidades: `cnes`, `territorio_id` (além de `uf`, se aplicável).
+  - Equipes: `tipo` (ESF/ESB/ACS/OUTROS), `ativo` (bool).
+  - Fontes: `codigo`.
+  - Manter `limit/offset` em todas.
+- [ ] Exportação RDQA (PDF): endpoint `POST /rdqa/export/pdf` (WeasyPrint/Pyppeteer) com retorno `application/pdf`; registrar `exec_id/hash` para QR. (stub criado)
+- [x] Verificação pública (QR): endpoint `GET /public/verificar?exec_id=...&hash=...` retornando metadados/estado do artefato. (stub)
+- [ ] OpenAPI: documentar novos filtros e campos de proveniência; exemplos de uso do export/QR.
+- [ ] Testes: cobrir filtros adicionados e fluxos do exportador/rota pública (mocks onde necessário).
