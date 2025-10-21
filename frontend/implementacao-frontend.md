@@ -20,7 +20,7 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 - [x] Metadados de proveniência: estender tipos para exibir `fonte`, `periodo`, `versao` e, se disponível, `hash`/`exec_id`.
 
 ## 4) Roteamento
-- [ ] `react-router-dom` com rotas:
+- [x] `react-router-dom` com rotas:
   - `/` (dashboard simples), `/tempo`, `/territorios`, `/pop-faixa`, `/unidades`, `/equipes`, `/fontes`.
   - `/rdqa` (hub dos quadros) e sub-rotas por quadro (ex.: `/rdqa/consistencia`, `/rdqa/cobertura`).
 

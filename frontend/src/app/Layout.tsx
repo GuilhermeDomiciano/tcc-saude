@@ -1,13 +1,14 @@
-import { PropsWithChildren, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Link, Outlet } from 'react-router-dom'
 
-export function Layout({ children }: PropsWithChildren) {
+export function Layout() {
   return (
     <div className="min-h-svh bg-background text-foreground">
       <Header />
       <NavBar />
       <main className="mx-auto max-w-6xl p-4 print:p-0">
         <div className="print-container rounded-lg bg-card p-4 shadow-sm print:shadow-none print:bg-white">
-          {children}
+          <Outlet />
         </div>
       </main>
     </div>
@@ -31,14 +32,14 @@ function NavBar() {
   return (
     <nav className="no-print border-b">
       <div className="mx-auto max-w-6xl p-3 flex flex-wrap gap-4">
-        <a className={linkCls} href="/">Dashboard</a>
-        <a className={linkCls} href="/tempo">Tempo</a>
-        <a className={linkCls} href="/territorios">Territórios</a>
-        <a className={linkCls} href="/pop-faixa">Pop. Faixa</a>
-        <a className={linkCls} href="/unidades">Unidades</a>
-        <a className={linkCls} href="/equipes">Equipes</a>
-        <a className={linkCls} href="/fontes">Fontes</a>
-        <a className={linkCls} href="/rdqa">RDQA</a>
+        <Link className={linkCls} to="/">Dashboard</Link>
+        <Link className={linkCls} to="/tempo">Tempo</Link>
+        <Link className={linkCls} to="/territorios">Territórios</Link>
+        <Link className={linkCls} to="/pop-faixa">Pop. Faixa</Link>
+        <Link className={linkCls} to="/unidades">Unidades</Link>
+        <Link className={linkCls} to="/equipes">Equipes</Link>
+        <Link className={linkCls} to="/fontes">Fontes</Link>
+        <Link className={linkCls} to="/rdqa">RDQA</Link>
       </div>
     </nav>
   )
@@ -69,4 +70,3 @@ function ApiKeyField() {
 }
 
 export default Layout
-
