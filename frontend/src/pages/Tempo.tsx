@@ -7,6 +7,7 @@ import { listTempo, deleteTempo } from '../lib/api'
 import type { DimTempo } from '../lib/types'
 import Modal from '../components/Modal'
 import TempoForm from '../components/forms/TempoForm'
+import { Button } from '@/components/ui/button'
 
 export default function Tempo() {
   const [ano, setAno] = useState<string>('')
@@ -14,7 +15,6 @@ export default function Tempo() {
   const [limit, setLimit] = useState<number>(10)
   const [offset, setOffset] = useState<number>(0)
   const [showCreate, setShowCreate] = useState(false)
-  const [deleteId, setDeleteId] = useState<string>('')
   const queryClient = useQueryClient()
   const delMut = useMutation({
     mutationFn: (id: number) => deleteTempo(id),
@@ -54,14 +54,17 @@ export default function Tempo() {
       {
         header: 'Ações',
         cell: ({ row }) => (
-          <button
-            className="no-print rounded-md border px-2 py-0.5 text-xs"
+          <Button
+            className="no-print"
+            size="sm"
+            variant="destructive"
+            aria-label={`Excluir registro ${row.original.id}`}
             onClick={() => {
               if (confirm('Excluir este registro?')) delMut.mutate(row.original.id)
             }}
           >
             Excluir
-          </button>
+          </Button>
         ),
       },
     ],
@@ -88,6 +91,7 @@ export default function Tempo() {
               setOffset(0)
             }}
             placeholder="2025"
+            aria-label="Filtro por ano"
           />
         </label>
         <label className="text-sm">
@@ -103,6 +107,7 @@ export default function Tempo() {
               setOffset(0)
             }}
             placeholder="1..12"
+            aria-label="Filtro por mês"
           />
         </label>
         <label className="text-sm">
@@ -114,6 +119,7 @@ export default function Tempo() {
               setLimit(Number(e.target.value))
               setOffset(0)
             }}
+            aria-label="Linhas por página"
           >
             {[10, 20, 50].map((n) => (
               <option key={n} value={n}>
@@ -125,33 +131,7 @@ export default function Tempo() {
       </div>
 
       <div className="no-print">
-        <button onClick={() => setShowCreate(true)} className="rounded-md border bg-primary px-3 py-1 text-sm text-primary-foreground">Novo</button>
-      </div>
-
-      <div className="no-print flex items-end gap-2">
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Excluir por ID</span>
-          <input
-            type="number"
-            className="w-28 rounded-md border bg-background px-2 py-1"
-            value={deleteId}
-            onChange={(e) => setDeleteId(e.target.value)}
-            placeholder="id"
-          />
-        </label>
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={!deleteId || delMut.isPending}
-          onClick={() => {
-            const id = Number(deleteId)
-            if (!Number.isFinite(id)) return
-            if (confirm('Confirmar exclusão?')) {
-              delMut.mutate(id, { onSuccess: () => setDeleteId('') })
-            }
-          }}
-        >
-          Excluir
-        </button>
+        <Button onClick={() => setShowCreate(true)} aria-label="Novo período">Novo</Button>
       </div>
 
       <DataTable<DimTempo>
@@ -162,20 +142,24 @@ export default function Tempo() {
       />
 
       <div className="no-print flex items-center justify-between">
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+        <Button
+          variant="outline"
+          className="min-w-28"
           disabled={offset === 0}
           onClick={() => setOffset((o) => Math.max(0, o - limit))}
+          aria-label="Página anterior"
         >
           ← Anterior
-        </button>
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+        </Button>
+        <Button
+          variant="outline"
+          className="min-w-28"
           disabled={items.length < limit}
           onClick={() => setOffset((o) => o + limit)}
+          aria-label="Próxima página"
         >
           Próxima →
-        </button>
+        </Button>
       </div>
       <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Tempo">
         <TempoForm onSuccess={() => setShowCreate(false)} />

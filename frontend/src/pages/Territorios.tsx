@@ -7,13 +7,13 @@ import { listTerritorios, deleteTerritorio } from '../lib/api'
 import type { DimTerritorio } from '../lib/types'
 import Modal from '../components/Modal'
 import TerritorioForm from '../components/forms/TerritorioForm'
+import { Button } from '@/components/ui/button'
 
 export default function Territorios() {
   const [uf, setUf] = useState<string>('')
   const [ibge, setIbge] = useState<string>('')
   const [limit, setLimit] = useState<number>(10)
   const [offset, setOffset] = useState<number>(0)
-  // removed legacy delete-by-id control in favor of row actions
   const queryClient = useQueryClient()
   const delMut = useMutation({
     mutationFn: (id: number) => deleteTerritorio(id),
@@ -46,8 +46,19 @@ export default function Territorios() {
         header: 'Ações',
         cell: ({ row }) => (
           <div className="no-print flex gap-2">
-            <button className="rounded-md border px-2 py-0.5 text-xs" onClick={() => setEditing(row.original)}>Editar</button>
-            <button className="rounded-md border px-2 py-0.5 text-xs" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>Excluir</button>
+            <Button size="sm" variant="outline" aria-label={`Editar ${row.original.nome}`} onClick={() => setEditing(row.original)}>
+              Editar
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              aria-label={`Excluir ${row.original.nome}`}
+              onClick={() => {
+                if (confirm('Excluir este registro?')) delMut.mutate(row.original.id)
+              }}
+            >
+              Excluir
+            </Button>
           </div>
         ),
       },
@@ -73,8 +84,6 @@ export default function Territorios() {
         <h2>Dimensão: Territórios</h2>
       </div>
 
-      
-
       <div className="no-print flex flex-wrap items-end gap-3">
         <label className="text-sm">
           <span className="block text-muted-foreground">UF</span>
@@ -87,7 +96,10 @@ export default function Territorios() {
               setOffset(0)
             }}
             placeholder="RS"
+            aria-describedby="ajuda-uf"
+            aria-label="Filtro por UF"
           />
+          <span id="ajuda-uf" className="block text-xs text-muted-foreground">2 letras, ex.: RS</span>
         </label>
         <label className="text-sm">
           <span className="block text-muted-foreground">IBGE</span>
@@ -99,6 +111,8 @@ export default function Territorios() {
               setOffset(0)
             }}
             placeholder="4300000"
+            inputMode="numeric"
+            aria-label="Filtro por código IBGE"
           />
         </label>
         <label className="text-sm">
@@ -110,6 +124,7 @@ export default function Territorios() {
               setLimit(Number(e.target.value))
               setOffset(0)
             }}
+            aria-label="Linhas por página"
           >
             {[10, 20, 50].map((n) => (
               <option key={n} value={n}>
@@ -121,7 +136,7 @@ export default function Territorios() {
       </div>
 
       <div className="no-print">
-        <button onClick={() => setShowCreate(true)} className="rounded-md border bg-primary px-3 py-1 text-sm text-primary-foreground">Novo</button>
+        <Button onClick={() => setShowCreate(true)} aria-label="Novo território">Novo</Button>
       </div>
 
       <DataTable<DimTerritorio>
@@ -132,20 +147,24 @@ export default function Territorios() {
       />
 
       <div className="no-print flex items-center justify-between">
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+        <Button
+          variant="outline"
+          className="min-w-28"
           disabled={offset === 0}
           onClick={() => setOffset((o) => Math.max(0, o - limit))}
+          aria-label="Página anterior"
         >
           ← Anterior
-        </button>
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+        </Button>
+        <Button
+          variant="outline"
+          className="min-w-28"
           disabled={items.length < limit}
           onClick={() => setOffset((o) => o + limit)}
+          aria-label="Próxima página"
         >
           Próxima →
-        </button>
+        </Button>
       </div>
       <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Novo Território">
         <TerritorioForm onSuccess={() => setShowCreate(false)} />

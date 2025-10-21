@@ -17,18 +17,19 @@ export function DataTable<T extends object>({ data, columns, loading, error }: D
     getPaginationRowModel: getPaginationRowModel(),
   })
 
-  if (loading) return <div className="text-sm text-muted-foreground">Carregando…</div>
+  if (loading) return <div className="text-sm text-muted-foreground" aria-live="polite">Carregando…</div>
   if (error) return <div className="text-sm text-destructive">Erro: {error}</div>
   if (!data?.length) return <div className="text-sm text-muted-foreground">Nenhum registro encontrado.</div>
 
   return (
     <div className="w-full overflow-auto">
-      <table className="w-full border-collapse text-sm">
+      <table className="w-full border-collapse text-sm rounded-md outline outline-border overflow-hidden">
+        <caption className="sr-only">Tabela de dados</caption>
         <thead className="bg-muted text-foreground/90">
           {table.getHeaderGroups().map((hg) => (
             <tr key={hg.id}>
               {hg.headers.map((h) => (
-                <th key={h.id} className="px-3 py-2 text-left font-medium">
+                <th key={h.id} className="px-3 py-2 text-left font-medium" scope="col">
                   {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
                 </th>
               ))}
@@ -37,7 +38,7 @@ export function DataTable<T extends object>({ data, columns, loading, error }: D
         </thead>
         <tbody>
           {table.getRowModel().rows.map((r) => (
-            <tr key={r.id} className="odd:bg-background even:bg-secondary/30">
+            <tr key={r.id} className="odd:bg-background even:bg-secondary/30 border-t border-border">
               {r.getVisibleCells().map((c) => (
                 <td key={c.id} className="px-3 py-2 align-top">
                   {flexRender(c.column.columnDef.cell, c.getContext())}
@@ -52,3 +53,4 @@ export function DataTable<T extends object>({ data, columns, loading, error }: D
 }
 
 export default DataTable
+
