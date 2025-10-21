@@ -23,7 +23,7 @@ export function DataTable<T extends object>({ data, columns, loading, error }: D
   if (!data?.length) return <div className="text-sm text-muted-foreground">Nenhum registro encontrado.</div>
 
   return (
-    <Table className="rounded-md outline outline-1 outline-border overflow-hidden">
+    <Table className="rounded-md outline outline-border overflow-hidden">
       <TableCaption>Tabela de dados</TableCaption>
       <TableHeader>
         {table.getHeaderGroups().map((hg) => (

@@ -131,6 +131,20 @@ class FatoRedeFisica(DWBase, table=True):
     extract_ts: datetime = Field(default_factory=datetime.utcnow)
 
 
+class ArtefatoExecucao(DWBase, table=True):
+    id: str = Field(primary_key=True)  # exec_id (UUID string)
+    hash_sha256: str
+    tipo: str = Field(default="rdqa_pdf")
+    fonte: Optional[str] = None
+    periodo: Optional[str] = None
+    versao: Optional[str] = None
+    autor: Optional[str] = None
+    metadados: Optional[str] = None
+    ok: bool = True
+    mensagem: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 __all__ = [
     "DemoItem",
     "DimTerritorio",
@@ -143,7 +157,7 @@ __all__ = [
     "FatoEventosVitais",
     "FatoFinancas",
     "FatoRedeFisica",
+    "ArtefatoExecucao",
     "EquipeTipo",
     "Sexo",
 ]
-

@@ -27,3 +27,21 @@ class RawIngest(StageBase, table=True):
 
 __all__ = ["RawIngest"]
 
+
+class RefIndicador(StageBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    indicador: str
+    chave: str
+    periodo: str
+    valor: float
+
+
+class CalcIndicador(StageBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    indicador: str
+    chave: str
+    periodo: str
+    valor: float
+
+
+__all__ += ["RefIndicador", "CalcIndicador"]

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional
-from datetime import date
+from datetime import date, datetime
 from sqlmodel import Field, SQLModel
 
 
@@ -65,3 +65,33 @@ class DevDimEquipe(SQLModel, table=True):
     unidade_id: Optional[int] = None
     territorio_id: Optional[int] = None
     ativo: bool = True
+
+
+class DevArtefatoExecucao(SQLModel, table=True):
+    id: str = Field(primary_key=True)  # exec_id (UUID string)
+    hash_sha256: str
+    tipo: str = Field(default="rdqa_pdf")
+    fonte: Optional[str] = None
+    periodo: Optional[str] = None
+    versao: Optional[str] = None
+    autor: Optional[str] = None
+    metadados: Optional[str] = None  # JSON (string) para simplicidade no dev-lite
+    ok: bool = True
+    mensagem: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class DevRefIndicador(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    indicador: str
+    chave: str  # dimensão/escopo (ex.: municipio=4300000; equipe=123)
+    periodo: str  # ex.: 2025-01, 2025Q1
+    valor: float
+
+
+class DevCalcIndicador(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    indicador: str
+    chave: str
+    periodo: str
+    valor: float

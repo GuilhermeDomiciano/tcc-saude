@@ -8,6 +8,8 @@ from sqlmodel import Session
 
 from app.core.db import get_session
 from app.services.rdqa_export_service import RDQAExportService
+from app.services.artefato_service import ArtefatoService
+from app.services.consistencia_service import ConsistenciaService
 
 
 router = APIRouter(prefix="/rdqa")
@@ -21,6 +23,8 @@ class ExportPDFIn(BaseModel):
 
 
 exporter = RDQAExportService()
+artefatos = ArtefatoService()
+consistencia = ConsistenciaService()
 
 
 @router.post(
@@ -47,6 +51,17 @@ async def export_pdf(payload: ExportPDFIn, session: Session = Depends(get_sessio
             pdf_bytes = await exporter.render_pdf_from_url(payload.url or '', format_=payload.format, margin_mm=payload.margin_mm)
         exec_id = str(uuid.uuid4())
         pdf_hash = exporter.sha256_hex(pdf_bytes)
+        # registrar execução/artefato
+        try:
+            artefatos.registrar_execucao(
+                session,
+                exec_id=exec_id,
+                hash_sha256=pdf_hash,
+                tipo="rdqa_pdf",
+            )
+        except Exception:
+            # Não falhar geração de PDF por erro de registro
+            pass
         headers = {
             'X-Exec-Id': exec_id,
             'X-Hash': pdf_hash,
@@ -57,3 +72,17 @@ async def export_pdf(payload: ExportPDFIn, session: Session = Depends(get_sessio
         raise
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"erro ao gerar PDF: {e}")
+
+
+@router.get("/consistencia")
+def listar_consistencia(periodo: Optional[str] = None, session: Session = Depends(get_session)):
+    res = consistencia.listar_indicadores(session, periodo)
+    return [
+        {"indicador": r.indicador, "periodo": r.periodo, "mape": r.mape, "pares": r.pares}
+        for r in res
+    ]
+
+
+@router.get("/consistencia/{indicador}/detalhes")
+def detalhes_consistencia(indicador: str, periodo: Optional[str] = None, session: Session = Depends(get_session)):
+    return consistencia.drill_down(session, indicador, periodo)

@@ -2,6 +2,10 @@ import { useRef, useState } from 'react'
 import { exportRDQAPdf } from '../../lib/api'
 import { buildRDQAHtml } from '../../lib/rdqa'
 import QRCode from 'qrcode'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export default function RdqaCobertura() {
   const contentRef = useRef<HTMLDivElement | null>(null)
@@ -14,12 +18,13 @@ export default function RdqaCobertura() {
     setLoading(true)
     try {
       const contentHtml = contentRef.current.innerHTML
-      const initialHtml = buildRDQAHtml({ title: 'Quadro RDQA — Cobertura', contentHtml, meta: { territorioId, periodo } })
+      const title = 'Quadro RDQA — Cobertura'
+      const initialHtml = buildRDQAHtml({ title, contentHtml, meta: { territorioId, periodo } })
       let { blob, execId, hash } = await exportRDQAPdf({ html: initialHtml, format: 'A4', margin_mm: 12 })
       if (execId && hash) {
         const verifyUrl = `${import.meta.env.VITE_API_BASE}/public/verificar?exec_id=${encodeURIComponent(execId)}&hash=${encodeURIComponent(hash)}`
         const qrDataUrl = await QRCode.toDataURL(verifyUrl)
-        const withQrHtml = buildRDQAHtml({ title: 'Quadro RDQA — Cobertura', contentHtml, meta: { territorioId, periodo }, qrDataUrl })
+        const withQrHtml = buildRDQAHtml({ title, contentHtml, meta: { territorioId, periodo }, qrDataUrl })
         const second = await exportRDQAPdf({ html: withQrHtml, format: 'A4', margin_mm: 12 })
         blob = second.blob
       }
@@ -40,46 +45,54 @@ export default function RdqaCobertura() {
     <section className="space-y-4">
       <div className="prose max-w-none dark:prose-invert">
         <h2>RDQA — Cobertura</h2>
+        <p className="text-sm text-muted-foreground">Evolução de cobertura por equipe e período com base no denominador populacional.</p>
       </div>
 
-      <div className="no-print flex flex-wrap items-end gap-3">
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Território ID</span>
-          <input className="w-40 rounded-md border bg-background px-2 py-1" value={territorioId} onChange={(e) => setTerritorioId(e.target.value)} placeholder="Ex.: 1" />
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Período</span>
-          <input className="w-64 rounded-md border bg-background px-2 py-1" value={periodo} onChange={(e) => setPeriodo(e.target.value)} placeholder="Ex.: 2024-01 a 2024-12" />
-        </label>
-        <button onClick={onExport} disabled={loading} className="rounded-md border bg-primary px-3 py-1 text-sm text-primary-foreground">
-          {loading ? 'Gerando...' : 'Exportar PDF'}
-        </button>
+      <div className="no-print grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+        <div className="space-y-1">
+          <Label htmlFor="f-territorio">Território ID</Label>
+          <Input id="f-territorio" className="w-40" value={territorioId} onChange={(e) => setTerritorioId(e.target.value)} placeholder="Ex.: 1" />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="f-periodo">Período</Label>
+          <Input id="f-periodo" className="w-64" value={periodo} onChange={(e) => setPeriodo(e.target.value)} placeholder="Ex.: 2024-01 a 2024-12" />
+        </div>
+        <div className="space-y-1">
+          <Label className="invisible">Exportar</Label>
+          <Button onClick={onExport} disabled={loading}>{loading ? 'Gerando…' : 'Exportar PDF'}</Button>
+        </div>
       </div>
 
-      <div ref={contentRef} id="rdqa-print" className="prose max-w-none dark:prose-invert">
-        <h3>Quadro de Cobertura (exemplo)</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Tempo</th>
-              <th>Equipe</th>
-              <th>Cobertura %</th>
-            </tr>
-          </thead>
-        <tbody>
-          <tr>
-            <td>2024-01</td>
-            <td>ESF 01</td>
-            <td>72,3%</td>
-          </tr>
-          <tr>
-            <td>2024-02</td>
-            <td>ESF 01</td>
-            <td>73,1%</td>
-          </tr>
-        </tbody>
-        </table>
+      <div className="rounded-lg border bg-card p-4">
+        <div className="flex items-baseline justify-between mb-3">
+          <h3 className="text-base font-semibold">Quadro de Cobertura</h3>
+          <p className="text-xs text-muted-foreground">{territorioId || '—'} • {periodo || '—'}</p>
+        </div>
+        <div ref={contentRef} id="rdqa-print">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tempo</TableHead>
+                <TableHead>Equipe</TableHead>
+                <TableHead>Cobertura %</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>2024-01</TableCell>
+                <TableCell>ESF 01</TableCell>
+                <TableCell>72,3%</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>2024-02</TableCell>
+                <TableCell>ESF 01</TableCell>
+                <TableCell>73,1%</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </section>
   )
 }
+

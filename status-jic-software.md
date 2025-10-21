@@ -166,3 +166,39 @@ _Fonte: elaboração própria._
 - **Agents.md** — visão geral e diretrizes (estrutura, segurança, convenções).
 - **implementacao-backend.md** — tudo que já foi entregue (DW/Stage, serviços, rotas).
 - **implementacao-frontend.md** — o que será implementado (páginas, exportação, testes).
+
+  ## 14) Atualizações desta conversa (v0.2)
+
+  - Backend (PDF/Exportação/Verificação)
+      - Exportador PDF real via Pyppeteer com robustez adicional: usa Chrome/Chromium/Edge instalado quando disponível;
+        realiza download gerenciado quando necessário; flags --no-sandbox --disable-gpu --disable-dev-shm-usage.
+      - Compatibilidade corrigida: Page.setContent() sem waitUntil (sincronização via waitForSelector('body')).
+      - Endpoint POST /rdqa/export/pdf retorna application/pdf e headers X-Exec-Id/X-Hash (para QR/validação).
+      - Verificação pública (stub): GET /public/verificar?exec_id=&hash=.
+  - Backend (Listas/DTOs/Proveniência)
+      - Filtros novos: Territórios (uf, cod_ibge_municipio), Unidades (cnes, territorio_id), Equipes (tipo, ativo),
+        Fontes (codigo).
+      - DTOs Out agora incluem: fonte, periodo, versao, hash, exec_id (opcional).
+      - Proveniência aplicada (dev):
+          - Tempo: fonte=Calendário, periodo=YYYY-MM, versao=dev-seed.
+          - Território: fonte=IBGE, periodo=2022/2024, versao=dev-seed.
+          - Unidades/Pop-Faixa/Equipes/Fontes: a aplicar com o mesmo padrão (em execução contínua).
+  - Backend (Seed Dev – SQLite)
+      - Script backend/scripts/seed.py: limpa e popula banco com dados realistas do estado TO (Tocantins):
+          - ~40 municípios; Tempo 2020–2025; Unidades (3–6 por município); População por faixa etária/sexo (2020..2025);
+            Equipes (2–6/unidade; ESF/ESB/ACS/OUTROS; ativo ~90%); Fontes (001..006).
+      - Execução (PowerShell): cd backend → $env:PYTHONPATH=(Get-Location).Path → python scripts/seed.py.
+  - Frontend (Listas/CRUD)
+      - Rotas: /, /tempo, /territorios, /pop-faixa, /unidades, /equipes, /fontes, /rdqa/*.
+      - Listas com React Query + React Table; paginação limit/offset; filtros por domínio.
+      - Badges de proveniência (exibe fonte/periodo/versao) em todas as listas.
+      - Formulários (POST/PUT) com RHF + Zod (Tempo e Territórios); interceptor X-API-Key; invalidation pós-sucesso.
+      - Exclusão (DELETE) por linha com confirmação e refetch (substitui “excluir por ID”).
+  - Frontend (RDQA – Opção A)
+      - Exporta quadrinhos RDQA via POST /rdqa/export/pdf a partir do HTML da página; 2ª passagem com QR para /public/
+        verificar?exec_id&hash.
+      - Páginas: /rdqa/consistencia e /rdqa/cobertura (com filtros e conteúdo de exemplo).
+      - Tratamento de erros: leitura do blob de erro (500/400) e alerta detalhado no frontend.
+  - Testes/Validações
+      - Backend: filtros (territórios, unidades) e aceitação de parâmetros (equipes, fontes) validados.
+      - PDF/QR: validação manual do fluxo end-to-end (headers → QR → verificação pública).

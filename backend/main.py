@@ -10,6 +10,9 @@ from app.models.dev_lite import (
     DevDimUnidade,
     DevDimTempo,
     DevDimPopFaixaEtaria,
+    DevArtefatoExecucao,
+    DevRefIndicador,
+    DevCalcIndicador,
 )
 from datetime import date
 from pathlib import Path
@@ -67,6 +70,9 @@ def create_app() -> FastAPI:
                 DevDimUnidade.__table__,
                 DevDimTempo.__table__,
                 DevDimPopFaixaEtaria.__table__,
+                DevArtefatoExecucao.__table__,
+                DevRefIndicador.__table__,
+                DevCalcIndicador.__table__,
             ])
             with Session(engine) as session:
                 try:

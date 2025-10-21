@@ -2,6 +2,10 @@ import { useRef, useState } from 'react'
 import { exportRDQAPdf } from '../../lib/api'
 import { buildRDQAHtml } from '../../lib/rdqa'
 import QRCode from 'qrcode'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export default function RdqaConsistencia() {
   const contentRef = useRef<HTMLDivElement | null>(null)
@@ -14,16 +18,13 @@ export default function RdqaConsistencia() {
     setLoading(true)
     try {
       const contentHtml = contentRef.current.innerHTML
-      const initialHtml = buildRDQAHtml({
-        title: 'Quadro RDQA — Consistência',
-        contentHtml,
-        meta: { municipio, periodo },
-      })
+      const title = 'Quadro RDQA — Consistência'
+      const initialHtml = buildRDQAHtml({ title, contentHtml, meta: { municipio, periodo } })
       let { blob, execId, hash } = await exportRDQAPdf({ html: initialHtml, format: 'A4', margin_mm: 12 })
       if (execId && hash) {
         const verifyUrl = `${import.meta.env.VITE_API_BASE}/public/verificar?exec_id=${encodeURIComponent(execId)}&hash=${encodeURIComponent(hash)}`
         const qrDataUrl = await QRCode.toDataURL(verifyUrl)
-        const withQrHtml = buildRDQAHtml({ title: 'Quadro RDQA — Consistência', contentHtml, meta: { municipio, periodo }, qrDataUrl })
+        const withQrHtml = buildRDQAHtml({ title, contentHtml, meta: { municipio, periodo }, qrDataUrl })
         const second = await exportRDQAPdf({ html: withQrHtml, format: 'A4', margin_mm: 12 })
         blob = second.blob
       }
@@ -44,49 +45,57 @@ export default function RdqaConsistencia() {
     <section className="space-y-4">
       <div className="prose max-w-none dark:prose-invert">
         <h2>RDQA — Consistência</h2>
+        <p className="text-sm text-muted-foreground">Compare totais por indicador entre fontes oficiais para identificar divergências.</p>
       </div>
 
-      <div className="no-print flex flex-wrap items-end gap-3">
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Município</span>
-          <input className="w-64 rounded-md border bg-background px-2 py-1" value={municipio} onChange={(e) => setMunicipio(e.target.value)} placeholder="Ex.: Município A" />
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Período</span>
-          <input className="w-64 rounded-md border bg-background px-2 py-1" value={periodo} onChange={(e) => setPeriodo(e.target.value)} placeholder="Ex.: 2024-01 a 2024-12" />
-        </label>
-        <button onClick={onExport} disabled={loading} className="rounded-md border bg-primary px-3 py-1 text-sm text-primary-foreground">
-          {loading ? 'Gerando...' : 'Exportar PDF'}
-        </button>
+      <div className="no-print grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+        <div className="space-y-1">
+          <Label htmlFor="f-municipio">Município</Label>
+          <Input id="f-municipio" className="w-64" value={municipio} onChange={(e) => setMunicipio(e.target.value)} placeholder="Ex.: Município A" />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="f-periodo">Período</Label>
+          <Input id="f-periodo" className="w-64" value={periodo} onChange={(e) => setPeriodo(e.target.value)} placeholder="Ex.: 2024-01 a 2024-12" />
+        </div>
+        <div className="space-y-1">
+          <Label className="invisible">Exportar</Label>
+          <Button onClick={onExport} disabled={loading}>{loading ? 'Gerando…' : 'Exportar PDF'}</Button>
+        </div>
       </div>
 
-      <div ref={contentRef} id="rdqa-print" className="prose max-w-none dark:prose-invert">
-        <h3>Quadro de Consistência (exemplo)</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Indicador</th>
-              <th>Fonte A</th>
-              <th>Fonte B</th>
-              <th>Diferença %</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Nascidos vivos</td>
-              <td>1020</td>
-              <td>1000</td>
-              <td>+2.0%</td>
-            </tr>
-            <tr>
-              <td>Óbitos gerais</td>
-              <td>520</td>
-              <td>515</td>
-              <td>+1.0%</td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="rounded-lg border bg-card p-4">
+        <div className="flex items-baseline justify-between mb-3">
+          <h3 className="text-base font-semibold">Quadro de Consistência</h3>
+          <p className="text-xs text-muted-foreground">{municipio || '—'} • {periodo || '—'}</p>
+        </div>
+        <div ref={contentRef} id="rdqa-print">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Indicador</TableHead>
+                <TableHead>Fonte A</TableHead>
+                <TableHead>Fonte B</TableHead>
+                <TableHead>Diferença %</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Nascidos vivos</TableCell>
+                <TableCell>1020</TableCell>
+                <TableCell>1000</TableCell>
+                <TableCell>+2,0%</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Óbitos gerais</TableCell>
+                <TableCell>520</TableCell>
+                <TableCell>515</TableCell>
+                <TableCell>+1,0%</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </section>
   )
 }
+
