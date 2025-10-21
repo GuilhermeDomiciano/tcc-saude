@@ -43,10 +43,10 @@ Objetivo: detalhar, em passos executáveis, as funcionalidades adicionais do mé
   - `backend/tests/test_rdqa_cobertura.py`.
 
 ## 4) Diff entre Ciclos (Atual vs Anterior)
-- [ ] Serviço: comparar valores de indicadores entre dois períodos.
+- [x] Serviço: comparar valores de indicadores entre dois períodos.
   - `app/services/rdqa_diff_service.py` com `comparar(indicadores, periodo_atual, periodo_anterior)` retornando `valor_atual`, `valor_anterior`, `delta`, `tendencia` (`melhora`/`piora`/`igual`).
-- [ ] Rota API: `GET /rdqa/diff?periodo_atual&periodo_anterior&indicadores=...`.
-- [ ] Testes: casos de melhora, piora e estabilidade.
+- [x] Rota API: `GET /rdqa/diff?periodo_atual&periodo_anterior&indicadores=...`.
+- [x] Testes: casos de melhora, piora e estabilidade.
   - `backend/tests/test_rdqa_diff.py`.
 
 ## 5) Pacote de Reprodutibilidade

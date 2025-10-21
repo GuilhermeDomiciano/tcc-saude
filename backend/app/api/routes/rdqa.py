@@ -11,6 +11,8 @@ from app.services.rdqa_export_service import RDQAExportService
 from app.services.artefato_service import ArtefatoService
 from app.services.consistencia_service import ConsistenciaService
 from app.services.rdqa_cobertura_service import RDQACoberturaService
+from app.services.rdqa_diff_service import RDQADiffService
+from app.services.rdqa_cobertura_service import RDQACoberturaService
 
 
 router = APIRouter(prefix="/rdqa")
@@ -26,6 +28,8 @@ class ExportPDFIn(BaseModel):
 exporter = RDQAExportService()
 artefatos = ArtefatoService()
 consistencia = ConsistenciaService()
+rdqa_cobertura = RDQACoberturaService()
+rdqa_diff = RDQADiffService()
 rdqa_cobertura = RDQACoberturaService()
 
 
@@ -93,3 +97,18 @@ def detalhes_consistencia(indicador: str, periodo: Optional[str] = None, session
 @router.get("/cobertura")
 def obter_cobertura(periodo: Optional[str] = None, session: Session = Depends(get_session)):
     return rdqa_cobertura.cobertura(session, periodo)
+
+
+@router.get("/diff")
+def diff(
+    periodo_atual: str,
+    periodo_anterior: str,
+    indicadores: Optional[str] = None,
+    session: Session = Depends(get_session),
+):
+    inds = [s.strip() for s in (indicadores.split(",") if indicadores else []) if s.strip()]
+    if not inds:
+        Model = rdqa_diff._model(session)
+        rows = session.exec(select(Model.indicador).where(Model.periodo == periodo_atual).distinct()).all()
+        inds = [row[0] if isinstance(row, tuple) else row for row in rows]
+    return rdqa_diff.comparar(session, indicadores=inds, periodo_atual=periodo_atual, periodo_anterior=periodo_anterior)
