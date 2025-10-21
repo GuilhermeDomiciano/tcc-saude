@@ -1,11 +1,17 @@
 import './App.css'
-import { Button } from './components/ui/button'
+import Layout from './app/Layout'
 
 function App() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <Button>Click me</Button>
-    </div>
+    <Layout>
+      <div className="prose max-w-none dark:prose-invert">
+        <h2>Bem-vindo</h2>
+        <p>Estrutura de layout pronta. Use a navbar para navegar.</p>
+        <p className="no-print text-xs text-muted-foreground">
+          Dica: defina sua <span className="font-semibold">X-API-Key</span> no topo se o backend exigir escrita.
+        </p>
+      </div>
+    </Layout>
   )
 }
 

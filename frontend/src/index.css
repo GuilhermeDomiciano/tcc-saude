@@ -118,3 +118,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media print {
+  @page { size: A4; margin: 12mm; }
+  body { background: white !important; }
+  .no-print { display: none !important; }
+  .print-container { width: auto !important; box-shadow: none !important; }
+}

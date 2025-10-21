@@ -10,9 +10,9 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 - [x] Estrutura base `src/`: `app/` (rotas/layout), `components/` (UI), `features/` (cada dimensão), `lib/` (api, utils), `styles/`, `pages/rdqa/` (quadros e exportação).
 
 ## 2) Estilos e Layout
-- [ ] Garantir Tailwind ativo (global.css com `@tailwind base; @tailwind components; @tailwind utilities;`).
-- [ ] Criar layout padrão: header (título, campo `X-API-Key` opcional), navbar (links), container.
-- [ ] Estilos de impressão para PDF: layout A4, margens, classes utilitárias `print:*`, ocultar elementos não imprimíveis.
+- [x] Garantir Tailwind ativo (global.css com `@tailwind base; @tailwind components; @tailwind utilities;`).
+- [x] Criar layout padrão: header (título, campo `X-API-Key` opcional), navbar (links), container.
+- [x] Estilos de impressão para PDF: layout A4, margens, classes utilitárias `print:*`, ocultar elementos não imprimíveis.
 
 ## 3) Cliente de API e Tipos
 - [ ] `src/lib/api.ts`: axios com `baseURL`=`import.meta.env.VITE_API_BASE`, interceptor para `X-API-Key` (se presente em `localStorage`).
@@ -69,4 +69,3 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 - [ ] QR Code nos PDFs para verificação pública do conteúdo (rastreabilidade ponta a ponta).
 - [ ] Páginas RDQA compõem as figuras/tabelas do paper (prints podem ser usados como anexos).
 - [ ] Estilos de impressão garantem legibilidade e aderência a A4.
-
