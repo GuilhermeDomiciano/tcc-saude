@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { isAxiosError, type AxiosError } from 'axios'
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE as string,
@@ -28,14 +28,12 @@ export const routes = {
 export type ListParams = {
   limit?: number
   offset?: number
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export const buildParams = (p?: ListParams) => ({ ...p })
 
-export const isAxiosError = (err: unknown): err is import('axios').AxiosError => {
-  return !!(err && typeof err === 'object' && (err as any).isAxiosError)
-}
+export const isAxiosErrorNarrow = (err: unknown): err is AxiosError<unknown> => isAxiosError(err)
 
 export async function getList<T>(path: string, params?: ListParams): Promise<T[]> {
   const res = await api.get<T[]>(path, { params: buildParams(params) })
@@ -72,4 +70,24 @@ export async function exportRDQAPdf(payload: ExportPdfPayload): Promise<{ blob: 
   const hash = res.headers?.['x-hash'] as string | undefined
   const blob: Blob = res.data
   return { blob, execId, hash }
+}
+
+import type { DimTempoCreate, DimTempoUpdate, DimTerritorioCreate, DimTerritorioUpdate } from './types'
+
+export async function createTempo(body: DimTempoCreate) {
+  const res = await api.post(routes.tempo, body)
+  return res.data
+}
+export async function updateTempo(id: number, body: DimTempoUpdate) {
+  const res = await api.put(`${routes.tempo}/${id}`, body)
+  return res.data
+}
+
+export async function createTerritorio(body: DimTerritorioCreate) {
+  const res = await api.post(routes.territorios, body)
+  return res.data
+}
+export async function updateTerritorio(id: number, body: DimTerritorioUpdate) {
+  const res = await api.put(`${routes.territorios}/${id}`, body)
+  return res.data
 }

@@ -5,12 +5,16 @@ import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
 import { listTerritorios } from '../lib/api'
 import type { DimTerritorio } from '../lib/types'
+import Modal from '../components/Modal'
+import TerritorioForm from '../components/forms/TerritorioForm'
 
 export default function Territorios() {
   const [uf, setUf] = useState<string>('')
   const [ibge, setIbge] = useState<string>('')
   const [limit, setLimit] = useState<number>(10)
   const [offset, setOffset] = useState<number>(0)
+  const [showCreate, setShowCreate] = useState(false)
+  const [editing, setEditing] = useState<DimTerritorio | null>(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['territorios', { uf, ibge, limit, offset }],
@@ -33,12 +37,20 @@ export default function Territorios() {
       { header: 'Pop. Censo 2022', accessorKey: 'pop_censo_2022' },
       { header: 'Pop. Estim. 2024', accessorKey: 'pop_estim_2024' },
       {
+        header: 'Ações',
+        cell: ({ row }) => (
+          <button className="no-print rounded-md border px-2 py-0.5 text-xs" onClick={() => setEditing(row.original)}>
+            Editar
+          </button>
+        ),
+      },
+      {
         header: 'Proveniência',
         cell: ({ row }) => (
           <ProvenanceBadges
-            fonte={(row.original as any).fonte}
-            periodo={(row.original as any).periodo}
-            versao={(row.original as any).versao}
+            fonte={row.original.fonte}
+            periodo={row.original.periodo}
+            versao={row.original.versao}
           />
         ),
       },
@@ -99,6 +111,10 @@ export default function Territorios() {
         </label>
       </div>
 
+      <div className="no-print">
+        <button onClick={() => setShowCreate(true)} className="rounded-md border bg-primary px-3 py-1 text-sm text-primary-foreground">Novo</button>
+      </div>
+
       <DataTable<DimTerritorio>
         data={items}
         columns={columns}
@@ -122,6 +138,26 @@ export default function Territorios() {
           Próxima →
         </button>
       </div>
+      <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Novo Território">
+        <TerritorioForm onSuccess={() => setShowCreate(false)} />
+      </Modal>
+      <Modal open={!!editing} onClose={() => setEditing(null)} title="Editar Território">
+        {editing && (
+          <TerritorioForm
+            initial={{
+              id: editing.id,
+              cod_ibge_municipio: editing.cod_ibge_municipio,
+              nome: editing.nome,
+              uf: editing.uf,
+              area_km2: editing.area_km2 ?? undefined,
+              pop_censo_2022: editing.pop_censo_2022 ?? undefined,
+              pop_estim_2024: editing.pop_estim_2024 ?? undefined,
+            }}
+            onSuccess={() => setEditing(null)}
+          />
+        )}
+      </Modal>
     </section>
   )
 }
+

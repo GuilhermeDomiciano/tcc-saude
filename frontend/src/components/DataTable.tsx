@@ -4,7 +4,7 @@ import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } fro
 
 export type DataTableProps<T extends object> = {
   data: T[]
-  columns: ColumnDef<T, any>[]
+  columns: ColumnDef<T, unknown>[]
   loading?: boolean
   error?: string | null
 }

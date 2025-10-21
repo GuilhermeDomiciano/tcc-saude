@@ -36,9 +36,9 @@ export default function Unidades() {
         header: 'Proveniência',
         cell: ({ row }) => (
           <ProvenanceBadges
-            fonte={(row.original as any).fonte}
-            periodo={(row.original as any).periodo}
-            versao={(row.original as any).versao}
+            fonte={row.original.fonte}
+            periodo={row.original.periodo}
+            versao={row.original.versao}
           />
         ),
       },
@@ -125,3 +125,4 @@ export default function Unidades() {
     </section>
   )
 }
+

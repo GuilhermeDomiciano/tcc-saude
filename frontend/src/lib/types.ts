@@ -14,7 +14,7 @@ export interface DimTerritorioCreate {
   pop_censo_2022?: number | null
   pop_estim_2024?: number | null
 }
-export interface DimTerritorioUpdate extends Partial<DimTerritorioCreate> {}
+export type DimTerritorioUpdate = Partial<DimTerritorioCreate>
 export interface DimTerritorioOut {
   id: number
   cod_ibge_municipio: string
@@ -34,7 +34,7 @@ export interface DimTempoCreate {
   quadrimestre: number
   mes_nome?: string | null
 }
-export interface DimTempoUpdate extends Partial<DimTempoCreate> {}
+export type DimTempoUpdate = Partial<DimTempoCreate>
 export interface DimTempoOut {
   id: number
   data: string
@@ -54,7 +54,7 @@ export interface DimPopFaixaEtariaCreate {
   sexo: Sexo
   populacao: number
 }
-export interface DimPopFaixaEtariaUpdate extends Partial<DimPopFaixaEtariaCreate> {}
+export type DimPopFaixaEtariaUpdate = Partial<DimPopFaixaEtariaCreate>
 export interface DimPopFaixaEtariaOut {
   id: number
   territorio_id: number
@@ -73,7 +73,7 @@ export interface DimUnidadeCreate {
   territorio_id?: number | null
   gestao?: string | null
 }
-export interface DimUnidadeUpdate extends Partial<DimUnidadeCreate> {}
+export type DimUnidadeUpdate = Partial<DimUnidadeCreate>
 export interface DimUnidadeOut {
   id: number
   cnes: string
@@ -93,7 +93,7 @@ export interface DimEquipeCreate {
   territorio_id?: number | null
   ativo?: boolean
 }
-export interface DimEquipeUpdate extends Partial<DimEquipeCreate> {}
+export type DimEquipeUpdate = Partial<DimEquipeCreate>
 export interface DimEquipeOut {
   id: number
   id_equipe: string
@@ -108,7 +108,7 @@ export interface DimFonteRecursoCreate {
   codigo: string
   descricao: string
 }
-export interface DimFonteRecursoUpdate extends Partial<DimFonteRecursoCreate> {}
+export type DimFonteRecursoUpdate = Partial<DimFonteRecursoCreate>
 export interface DimFonteRecursoOut {
   id: number
   codigo: string
@@ -116,7 +116,4 @@ export interface DimFonteRecursoOut {
 }
 export type DimFonteRecurso = DimFonteRecursoOut & Proveniencia
 
-export interface FatoCoberturaAPSOut {
-  [key: string]: any
-}
-
+export type FatoCoberturaAPSOut = Record<string, unknown>

@@ -5,12 +5,15 @@ import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
 import { listTempo } from '../lib/api'
 import type { DimTempo } from '../lib/types'
+import Modal from '../components/Modal'
+import TempoForm from '../components/forms/TempoForm'
 
 export default function Tempo() {
   const [ano, setAno] = useState<string>('')
   const [mes, setMes] = useState<string>('')
   const [limit, setLimit] = useState<number>(10)
   const [offset, setOffset] = useState<number>(0)
+  const [showCreate, setShowCreate] = useState(false)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['tempo', { ano, mes, limit, offset }],
@@ -36,9 +39,9 @@ export default function Tempo() {
         header: 'Proveniência',
         cell: ({ row }) => (
           <ProvenanceBadges
-            fonte={(row.original as any).fonte}
-            periodo={(row.original as any).periodo}
-            versao={(row.original as any).versao}
+            fonte={row.original.fonte}
+            periodo={row.original.periodo}
+            versao={row.original.versao}
           />
         ),
       },
@@ -102,6 +105,10 @@ export default function Tempo() {
         </label>
       </div>
 
+      <div className="no-print">
+        <button onClick={() => setShowCreate(true)} className="rounded-md border bg-primary px-3 py-1 text-sm text-primary-foreground">Novo</button>
+      </div>
+
       <DataTable<DimTempo>
         data={items}
         columns={columns}
@@ -125,6 +132,10 @@ export default function Tempo() {
           Próxima →
         </button>
       </div>
+      <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Tempo">
+        <TempoForm onSuccess={() => setShowCreate(false)} />
+      </Modal>
     </section>
   )
 }
+

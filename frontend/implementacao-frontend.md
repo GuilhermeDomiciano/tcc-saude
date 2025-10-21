@@ -32,9 +32,9 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 - [x] Badges de proveniência nos cards/tabelas (exibir `fonte/periodo/versao`).
 
 ## 6) Formulários (POST/PUT)
-- [ ] Modal/Form por dimensão (Zod + React Hook Form): validações (UF 2 chars, IBGE 6–7 dígitos, datas ISO, população ≥ 0).
-- [ ] Enviar `X-API-Key` no cabeçalho quando definido (ler de um campo no header e salvar em `localStorage`).
-- [ ] Após sucesso, invalidar queries (React Query) e fechar modal.
+- [x] Modal/Form por dimensão (Zod + React Hook Form): validações (UF 2 chars, IBGE 6–7 dígitos, datas ISO, população ≥ 0). (Implementado para Tempo e Territórios)
+- [x] Enviar `X-API-Key` no cabeçalho quando definido (ler de um campo no header e salvar em `localStorage`).
+- [x] Após sucesso, invalidar queries (React Query) e fechar modal.
 
 ## 7) Exclusão (DELETE)
 - [ ] Diálogo de confirmação → DELETE → refetch da lista.
