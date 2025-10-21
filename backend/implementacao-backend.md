@@ -94,7 +94,7 @@ Objetivo: disponibilizar cadastro (CRUD) e consulta dos dados de referência usa
   - Equipes: `tipo` (ESF/ESB/ACS/OUTROS), `ativo` (bool).
   - Fontes: `codigo`.
   - Manter `limit/offset` em todas.
-- [ ] Exportação RDQA (PDF): endpoint `POST /rdqa/export/pdf` (WeasyPrint/Pyppeteer) com retorno `application/pdf`; registrar `exec_id/hash` para QR. (stub criado)
+ - [x] Exportação RDQA (PDF): endpoint `POST /rdqa/export/pdf` (Pyppeteer/Chromium) com retorno `application/pdf`; headers `X-Exec-Id`/`X-Hash`.
 - [x] Verificação pública (QR): endpoint `GET /public/verificar?exec_id=...&hash=...` retornando metadados/estado do artefato. (stub)
-- [ ] OpenAPI: documentar novos filtros e campos de proveniência; exemplos de uso do export/QR.
-- [ ] Testes: cobrir filtros adicionados e fluxos do exportador/rota pública (mocks onde necessário).
+ - [x] OpenAPI: documentar exportação com headers (`X-Exec-Id`, `X-Hash`) e novos filtros (via parâmetros nas rotas). Campos de proveniência já aparecem nos DTOs `Out`.
+ - [x] Testes: cobrir filtros novos (territórios, unidades) e aceitação de parâmetros (equipes, fontes) + verificação pública (stub). Exportação PDF validada manualmente (testes e2e com Pyppeteer podem ser habilitados em ambiente com Chromium).
