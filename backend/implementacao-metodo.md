@@ -59,9 +59,9 @@ Objetivo: detalhar, em passos executáveis, as funcionalidades adicionais do mé
   - `backend/tests/test_reproducibilidade.py`.
 
 ## 6) Integrações, Segurança e Config
-- [ ] Headers de proveniência: manter `X-Exec-Id` e `X-Hash` em exportações; registrar no banco quando aplicável.
-- [ ] Chave de API: exigir `X-API-Key` nas rotas de escrita/geração, quando `API_KEY` estiver definida no ambiente.
-- [ ] CORS/ambiente: garantir `ALLOWED_ORIGINS` no `.env`. Confirmar `DATABASE_URL` e Alembic em Postgres.
+- [x] Headers de proveniência: manter `X-Exec-Id` e `X-Hash` em exportações; registrar no banco quando aplicável.
+- [x] Chave de API: exigir `X-API-Key` nas rotas de escrita/geração, quando `API_KEY` estiver definida no ambiente.
+- [x] CORS/ambiente: garantir `ALLOWED_ORIGINS` no `.env`. Confirmar `DATABASE_URL` e Alembic em Postgres.
 - [ ] Observabilidade (opcional): logs estruturados com `exec_id` para rastrear cada geração.
 
 ## 7) OpenAPI e Documentação

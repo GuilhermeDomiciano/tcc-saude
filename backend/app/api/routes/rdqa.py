@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from sqlmodel import Session
 
 from app.core.db import get_session
+from app.core.security import require_api_key
 from app.services.rdqa_export_service import RDQAExportService
 from app.services.artefato_service import ArtefatoService
 from app.services.consistencia_service import ConsistenciaService
@@ -31,7 +32,6 @@ artefatos = ArtefatoService()
 consistencia = ConsistenciaService()
 rdqa_cobertura = RDQACoberturaService()
 rdqa_diff = RDQADiffService()
-rdqa_cobertura = RDQACoberturaService()
 repro_pkg = ReproducibilidadeService()
 
 
@@ -49,7 +49,7 @@ repro_pkg = ReproducibilidadeService()
         }
     },
 )
-async def export_pdf(payload: ExportPDFIn, session: Session = Depends(get_session)):
+async def export_pdf(payload: ExportPDFIn, session: Session = Depends(get_session), _: None = Depends(require_api_key)):
     try:
         if not payload.html and not payload.url:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="informe 'html' ou 'url'")
@@ -130,7 +130,7 @@ def diff(
         }
     },
 )
-def export_pacote(periodo: Optional[str] = None, session: Session = Depends(get_session)):
+def export_pacote(periodo: Optional[str] = None, session: Session = Depends(get_session), _: None = Depends(require_api_key)):
     try:
         zip_bytes, exec_id, pkg_hash = repro_pkg.gerar_pacote(session, periodo=periodo)
         # registrar artefato
