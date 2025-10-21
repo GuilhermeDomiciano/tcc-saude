@@ -15,9 +15,9 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 - [x] Estilos de impressão para PDF: layout A4, margens, classes utilitárias `print:*`, ocultar elementos não imprimíveis.
 
 ## 3) Cliente de API e Tipos
-- [ ] `src/lib/api.ts`: axios com `baseURL`=`import.meta.env.VITE_API_BASE`, interceptor para `X-API-Key` (se presente em `localStorage`).
-- [ ] Tipos TS alinhados aos DTOs do backend (Out/Create/Update) por dimensão.
-- [ ] Metadados de proveniência: estender tipos para exibir `fonte`, `periodo`, `versao` e, se disponível, `hash`/`exec_id`.
+- [x] `src/lib/api.ts`: axios com `baseURL`=`import.meta.env.VITE_API_BASE`, interceptor para `X-API-Key` (se presente em `localStorage`).
+- [x] Tipos TS alinhados aos DTOs do backend (Out/Create/Update) por dimensão.
+- [x] Metadados de proveniência: estender tipos para exibir `fonte`, `periodo`, `versao` e, se disponível, `hash`/`exec_id`.
 
 ## 4) Roteamento
 - [ ] `react-router-dom` com rotas:
