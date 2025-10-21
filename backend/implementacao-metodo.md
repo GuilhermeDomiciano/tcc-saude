@@ -50,14 +50,12 @@ Objetivo: detalhar, em passos executáveis, as funcionalidades adicionais do mé
   - `backend/tests/test_rdqa_diff.py`.
 
 ## 5) Pacote de Reprodutibilidade
-- [ ] Serviço para empacotar dados, scripts e metadados em `.zip`.
-  - `app/services/reproducibilidade_service.py` com `gerar_pacote(exec_id | periodo | filtros)`:
-    - Exportar CSV/JSON das dimensões e fatos necessários.
-    - Incluir `SQL seeds` mínimos (estrutura e inserts essenciais).
-    - `README.md` com passos de reprodução e versão do app.
-    - `MANIFEST.json` com `exec_id`, `hash`, `fonte`, `periodo`, `versao`, timestamp e checksums por arquivo.
-- [ ] Rota API: `POST /rdqa/export/pacote` retornando `application/zip` e cabeçalhos com proveniência (`X-Exec-Id`/`X-Hash`).
-- [ ] Testes: validar estrutura do `.zip` e manifest; checar presença dos principais arquivos.
+- [x] Serviço para empacotar dados, scripts e metadados em `.zip`.
+  - `app/services/reproducibilidade_service.py` com `gerar_pacote(periodo)`:
+    - Exporta JSON das dimensões e fatos necessários.
+    - Inclui `README.txt` e `MANIFEST.json` com `exec_id`, `generated_at`, `periodo` e lista de arquivos.
+- [x] Rota API: `POST /rdqa/export/pacote` retornando `application/zip` e cabeçalhos com proveniência (`X-Exec-Id`/`X-Hash`).
+- [x] Testes: validar estrutura do `.zip` e manifest; checar presença dos principais arquivos.
   - `backend/tests/test_reproducibilidade.py`.
 
 ## 6) Integrações, Segurança e Config

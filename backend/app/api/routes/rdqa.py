@@ -12,6 +12,7 @@ from app.services.artefato_service import ArtefatoService
 from app.services.consistencia_service import ConsistenciaService
 from app.services.rdqa_cobertura_service import RDQACoberturaService
 from app.services.rdqa_diff_service import RDQADiffService
+from app.services.reproducibilidade_service import ReproducibilidadeService
 from app.services.rdqa_cobertura_service import RDQACoberturaService
 
 
@@ -31,6 +32,7 @@ consistencia = ConsistenciaService()
 rdqa_cobertura = RDQACoberturaService()
 rdqa_diff = RDQADiffService()
 rdqa_cobertura = RDQACoberturaService()
+repro_pkg = ReproducibilidadeService()
 
 
 @router.post(
@@ -112,3 +114,35 @@ def diff(
         rows = session.exec(select(Model.indicador).where(Model.periodo == periodo_atual).distinct()).all()
         inds = [row[0] if isinstance(row, tuple) else row for row in rows]
     return rdqa_diff.comparar(session, indicadores=inds, periodo_atual=periodo_atual, periodo_anterior=periodo_anterior)
+
+
+@router.post(
+    "/export/pacote",
+    responses={
+        200: {
+            "content": {"application/zip": {}},
+            "description": "Pacote de reprodutibilidade (ZIP)",
+            "headers": {
+                "X-Exec-Id": {"description": "Identificador da execução", "schema": {"type": "string"}},
+                "X-Hash": {"description": "SHA-256 do conteúdo ZIP", "schema": {"type": "string"}},
+                "Content-Disposition": {"description": "Sugestão de nome do arquivo", "schema": {"type": "string"}},
+            },
+        }
+    },
+)
+def export_pacote(periodo: Optional[str] = None, session: Session = Depends(get_session)):
+    try:
+        zip_bytes, exec_id, pkg_hash = repro_pkg.gerar_pacote(session, periodo=periodo)
+        # registrar artefato
+        try:
+            artefatos.registrar_execucao(session, exec_id=exec_id, hash_sha256=pkg_hash, tipo="rdqa_package")
+        except Exception:
+            pass
+        headers = {
+            'X-Exec-Id': exec_id,
+            'X-Hash': pkg_hash,
+            'Content-Disposition': 'attachment; filename="rdqa-package.zip"',
+        }
+        return Response(content=zip_bytes, media_type='application/zip', headers=headers)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"erro ao gerar pacote: {e}")
