@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import Optional, List
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
 from sqlmodel import Session
@@ -82,8 +82,16 @@ async def export_pdf(payload: ExportPDFIn, session: Session = Depends(get_sessio
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"erro ao gerar PDF: {e}")
 
 
-@router.get("/consistencia")
-def listar_consistencia(periodo: Optional[str] = None, session: Session = Depends(get_session)):
+from app.schemas.rdqa import (
+    ConsistenciaResumoOut,
+    ConsistenciaDetalheOut,
+    CoberturaOut,
+    DiffRowOut,
+)
+
+
+@router.get("/consistencia", response_model=List[ConsistenciaResumoOut], summary="Lista MAPE por indicador")
+def listar_consistencia(periodo: Optional[str] = Query(None, description="Período (ex.: 2025-01)"), session: Session = Depends(get_session)):
     res = consistencia.listar_indicadores(session, periodo)
     return [
         {"indicador": r.indicador, "periodo": r.periodo, "mape": r.mape, "pares": r.pares}
@@ -91,21 +99,21 @@ def listar_consistencia(periodo: Optional[str] = None, session: Session = Depend
     ]
 
 
-@router.get("/consistencia/{indicador}/detalhes")
-def detalhes_consistencia(indicador: str, periodo: Optional[str] = None, session: Session = Depends(get_session)):
+@router.get("/consistencia/{indicador}/detalhes", response_model=List[ConsistenciaDetalheOut], summary="Drill-down de divergências")
+def detalhes_consistencia(indicador: str, periodo: Optional[str] = Query(None, description="Período"), session: Session = Depends(get_session)):
     return consistencia.drill_down(session, indicador, periodo)
 
 
-@router.get("/cobertura")
-def obter_cobertura(periodo: Optional[str] = None, session: Session = Depends(get_session)):
+@router.get("/cobertura", response_model=CoberturaOut, summary="Cobertura de quadros RDQA gerados")
+def obter_cobertura(periodo: Optional[str] = Query(None, description="Período"), session: Session = Depends(get_session)):
     return rdqa_cobertura.cobertura(session, periodo)
 
 
-@router.get("/diff")
+@router.get("/diff", response_model=List[DiffRowOut], summary="Comparação entre períodos (diff)")
 def diff(
-    periodo_atual: str,
-    periodo_anterior: str,
-    indicadores: Optional[str] = None,
+    periodo_atual: str = Query(..., description="Período atual"),
+    periodo_anterior: str = Query(..., description="Período anterior"),
+    indicadores: Optional[str] = Query(None, description="Lista separada por vírgula"),
     session: Session = Depends(get_session),
 ):
     inds = [s.strip() for s in (indicadores.split(",") if indicadores else []) if s.strip()]

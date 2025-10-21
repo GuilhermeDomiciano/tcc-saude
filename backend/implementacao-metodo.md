@@ -65,9 +65,9 @@ Objetivo: detalhar, em passos executáveis, as funcionalidades adicionais do mé
 - [ ] Observabilidade (opcional): logs estruturados com `exec_id` para rastrear cada geração.
 
 ## 7) OpenAPI e Documentação
-- [ ] Documentar novos endpoints (`/public/verificar`, `/rdqa/consistencia`, `/rdqa/cobertura`, `/rdqa/diff`, `/rdqa/export/pacote`) com exemplos de request/response e headers.
-- [ ] Incluir descrições de parâmetros (filtros, períodos) e códigos de erro (400/404/409/500) em `app/api/routes/*`.
-- [ ] Atualizar `backend/README.md` com fluxo de verificação pública e reprodutibilidade.
+- [x] Documentar novos endpoints (`/public/verificar`, `/rdqa/consistencia`, `/rdqa/cobertura`, `/rdqa/diff`, `/rdqa/export/pacote`) com exemplos de request/response e headers.
+- [x] Incluir descrições de parâmetros (filtros, períodos) e modelos de resposta em `app/schemas/rdqa.py` e anotar `response_model` nas rotas RDQA.
+- [x] Atualizar `backend/README.md` com fluxo de verificação pública e reprodutibilidade (seção RDQA – Endpoints e Exemplos).
 
 ## 8) Alinhamento com o Frontend
 - [ ] Verificação: backend responde para a página `/public/verificar` com `ok`, metadados e mensagens claras.
