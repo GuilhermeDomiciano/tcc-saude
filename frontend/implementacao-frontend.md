@@ -18,6 +18,7 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 - [x] `src/lib/api.ts`: axios com `baseURL`=`import.meta.env.VITE_API_BASE`, interceptor para `X-API-Key` (se presente em `localStorage`).
 - [x] Tipos TS alinhados aos DTOs do backend (Out/Create/Update) por dimensão.
 - [x] Metadados de proveniência: estender tipos para exibir `fonte`, `periodo`, `versao` e, se disponível, `hash`/`exec_id`.
+ - [x] Exportador RDQA: helper para `POST /rdqa/export/pdf` aceitando `{ html?: string, url?: string, format?: 'A4', margin_mm?: number }`, retornando `Blob` e lendo headers `X-Exec-Id`/`X-Hash` para o QR.
 
 ## 4) Roteamento
 - [x] `react-router-dom` com rotas:
@@ -41,9 +42,9 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 ## 8) RDQA: Páginas e Exportação
 - [ ] Criar páginas dos Quadros RDQA com layout de impressão (A4) e variações por período/município.
 - [ ] Exportação em PDF com QR Code de verificação:
-  - Opção A (recomendada): chamar endpoint do backend para renderização PDF (WeasyPrint/Pyppeteer) a partir de HTML da página; incluir `exec_id/hash` no QR.
+  - Opção A (recomendada): chamar endpoint do backend `POST /rdqa/export/pdf` (Pyppeteer) a partir do HTML da página; usar headers `X-Exec-Id`/`X-Hash` no QR.
   - Opção B (fallback): `window.print()` com estilos de impressão ou lib client-side, garantindo fidelidade mínima.
-- [ ] QR Code aponta para URL verificável (ex.: rota pública com parâmetros `exec_id`/`hash` ou filtro equivalente).
+- [ ] QR Code aponta para URL verificável do backend: `/public/verificar?exec_id=...&hash=...`.
 - [ ] Inserir metadados no rodapé (fonte/periodicidade/versão, data/hora da geração).
 
 ## 9) UX, A11y e Qualidade
@@ -55,7 +56,7 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 ## 10) Testes
 - [ ] Vitest + Testing Library: listas (render, loading, empty), formulários (validação, submit sucesso/erro).
 - [ ] Testes das páginas RDQA: renderização e presença de metadados de proveniência.
-- [ ] Teste de exportação PDF: mock da chamada ao backend e verificação de parâmetros (inclui `exec_id/hash`).
+- [ ] Teste de exportação PDF: mock do `POST /rdqa/export/pdf`, garantir leitura de headers `X-Exec-Id`/`X-Hash` e montagem correta do QR.
 - [ ] Mocks de API com MSW (ou axios-mock-adapter).
 
 ## 11) Build & Entrega

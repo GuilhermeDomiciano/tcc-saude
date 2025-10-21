@@ -22,6 +22,7 @@ export const routes = {
   equipes: '/dw/equipes',
   fontes: '/dw/fontes',
   fatosCobertura: '/dw/fatos/cobertura',
+  rdqaExportPdf: '/rdqa/export/pdf',
 } as const
 
 export type ListParams = {
@@ -57,3 +58,18 @@ export const listPopFaixa = (params?: ListParams) => getList<DimPopFaixaEtaria>(
 export const listUnidades = (params?: ListParams) => getList<DimUnidade>(routes.unidades, params)
 export const listEquipes = (params?: ListParams) => getList<DimEquipe>(routes.equipes, params)
 export const listFontes = (params?: ListParams) => getList<DimFonteRecurso>(routes.fontes, params)
+
+export type ExportPdfPayload = {
+  html?: string
+  url?: string
+  format?: string
+  margin_mm?: number
+}
+
+export async function exportRDQAPdf(payload: ExportPdfPayload): Promise<{ blob: Blob; execId?: string; hash?: string }> {
+  const res = await api.post(routes.rdqaExportPdf, payload, { responseType: 'blob' })
+  const execId = res.headers?.['x-exec-id'] as string | undefined
+  const hash = res.headers?.['x-hash'] as string | undefined
+  const blob: Blob = res.data
+  return { blob, execId, hash }
+}
