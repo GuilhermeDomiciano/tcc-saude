@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/DataTable'
+import ProvenanceBadges from '../components/Provenance'
 import { listPopFaixa } from '../lib/api'
 import type { DimPopFaixaEtaria } from '../lib/types'
 
@@ -30,6 +31,16 @@ export default function PopFaixa() {
       { header: 'Faixa Etária', accessorKey: 'faixa_etaria' },
       { header: 'Sexo', accessorKey: 'sexo' },
       { header: 'População', accessorKey: 'populacao' },
+      {
+        header: 'Proveniência',
+        cell: ({ row }) => (
+          <ProvenanceBadges
+            fonte={(row.original as any).fonte}
+            periodo={(row.original as any).periodo}
+            versao={(row.original as any).versao}
+          />
+        ),
+      },
     ],
     [],
   )

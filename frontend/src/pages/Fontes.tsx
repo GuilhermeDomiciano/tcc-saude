@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/DataTable'
+import ProvenanceBadges from '../components/Provenance'
 import { listFontes } from '../lib/api'
 import type { DimFonteRecurso } from '../lib/types'
 
@@ -20,6 +21,16 @@ export default function Fontes() {
       { header: 'ID', accessorKey: 'id' },
       { header: 'Código', accessorKey: 'codigo' },
       { header: 'Descrição', accessorKey: 'descricao' },
+      {
+        header: 'Proveniência',
+        cell: ({ row }) => (
+          <ProvenanceBadges
+            fonte={(row.original as any).fonte}
+            periodo={(row.original as any).periodo}
+            versao={(row.original as any).versao}
+          />
+        ),
+      },
     ],
     [],
   )

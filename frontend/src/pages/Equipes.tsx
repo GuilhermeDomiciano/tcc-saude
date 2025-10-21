@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/DataTable'
+import ProvenanceBadges from '../components/Provenance'
 import { listEquipes } from '../lib/api'
 import type { DimEquipe } from '../lib/types'
 
@@ -30,6 +31,16 @@ export default function Equipes() {
       { header: 'Unidade', accessorKey: 'unidade_id' },
       { header: 'Território', accessorKey: 'territorio_id' },
       { header: 'Ativo', accessorKey: 'ativo' },
+      {
+        header: 'Proveniência',
+        cell: ({ row }) => (
+          <ProvenanceBadges
+            fonte={(row.original as any).fonte}
+            periodo={(row.original as any).periodo}
+            versao={(row.original as any).versao}
+          />
+        ),
+      },
     ],
     [],
   )

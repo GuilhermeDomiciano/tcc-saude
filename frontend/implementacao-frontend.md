@@ -28,7 +28,7 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
 - [x] Para cada rota, página com:
   - Tabela (React Table) com paginação (`limit/offset`) e filtros (ex.: ano/mês em Tempo; UF/IBGE em Território; território/ano em Pop-Faixa).
   - Estados de carregando/erro (React Query: `useQuery`).
-- [ ] Badges de proveniência nos cards/tabelas (exibir `fonte/periodo/versao`).
+- [x] Badges de proveniência nos cards/tabelas (exibir `fonte/periodo/versao`).
 
 ## 6) Formulários (POST/PUT)
 - [ ] Modal/Form por dimensão (Zod + React Hook Form): validações (UF 2 chars, IBGE 6–7 dígitos, datas ISO, população ≥ 0).

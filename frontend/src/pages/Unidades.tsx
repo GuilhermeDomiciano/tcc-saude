@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/DataTable'
+import ProvenanceBadges from '../components/Provenance'
 import { listUnidades } from '../lib/api'
 import type { DimUnidade } from '../lib/types'
 
@@ -31,6 +32,16 @@ export default function Unidades() {
       { header: 'Bairro', accessorKey: 'bairro' },
       { header: 'Território', accessorKey: 'territorio_id' },
       { header: 'Gestão', accessorKey: 'gestao' },
+      {
+        header: 'Proveniência',
+        cell: ({ row }) => (
+          <ProvenanceBadges
+            fonte={(row.original as any).fonte}
+            periodo={(row.original as any).periodo}
+            versao={(row.original as any).versao}
+          />
+        ),
+      },
     ],
     [],
   )

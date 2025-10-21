@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/DataTable'
+import ProvenanceBadges from '../components/Provenance'
 import { listTerritorios } from '../lib/api'
 import type { DimTerritorio } from '../lib/types'
 
@@ -31,6 +32,16 @@ export default function Territorios() {
       { header: 'Área km²', accessorKey: 'area_km2' },
       { header: 'Pop. Censo 2022', accessorKey: 'pop_censo_2022' },
       { header: 'Pop. Estim. 2024', accessorKey: 'pop_estim_2024' },
+      {
+        header: 'Proveniência',
+        cell: ({ row }) => (
+          <ProvenanceBadges
+            fonte={(row.original as any).fonte}
+            periodo={(row.original as any).periodo}
+            versao={(row.original as any).versao}
+          />
+        ),
+      },
     ],
     [],
   )
