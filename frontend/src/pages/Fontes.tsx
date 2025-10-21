@@ -5,12 +5,15 @@ import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
 import { listFontes, deleteFonte } from '../lib/api'
 import type { DimFonteRecurso } from '../lib/types'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select'
 
 export default function Fontes() {
   const [codigo, setCodigo] = useState<string>('')
   const [limit, setLimit] = useState<number>(10)
   const [offset, setOffset] = useState<number>(0)
-  // removed legacy delete-by-id control in favor of row actions
   const queryClient = useQueryClient()
   const delMut = useMutation({
     mutationFn: (id: number) => deleteFonte(id),
@@ -24,17 +27,18 @@ export default function Fontes() {
 
   const columns = useMemo<ColumnDef<DimFonteRecurso>[]>(
     () => [
+      {
+        id: 'acoes',
+        header: 'Ações',
+        cell: ({ row }) => (
+          <Button className="no-print" size="sm" variant="destructive" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>
+            Excluir
+          </Button>
+        ),
+      },
       { header: 'ID', accessorKey: 'id' },
       { header: 'Código', accessorKey: 'codigo' },
       { header: 'Descrição', accessorKey: 'descricao' },
-      {
-        header: 'Ações',
-        cell: ({ row }) => (
-          <button className="no-print rounded-md border px-2 py-0.5 text-xs" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>
-            Excluir
-          </button>
-        ),
-      },
       {
         header: 'Proveniência',
         cell: ({ row }) => (
@@ -57,36 +61,22 @@ export default function Fontes() {
         <h2>Dimensão: Fontes de Recurso</h2>
       </div>
 
-      <div className="no-print flex flex-wrap items-end gap-3">
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Código</span>
-          <input
-            className="w-40 rounded-md border bg-background px-2 py-1"
-            value={codigo}
-            onChange={(e) => {
-              setCodigo(e.target.value)
-              setOffset(0)
-            }}
-            placeholder="001"
-          />
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Linhas por página</span>
-          <select
-            className="w-28 rounded-md border bg-background px-2 py-1"
-            value={limit}
-            onChange={(e) => {
-              setLimit(Number(e.target.value))
-              setOffset(0)
-            }}
-          >
-            {[10, 20, 50].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="no-print grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+        <div className="space-y-1">
+          <Label htmlFor="f-codigo">Código</Label>
+          <Input id="f-codigo" className="w-40" value={codigo} placeholder="001" onChange={(e) => { setCodigo(e.target.value); setOffset(0) }} />
+        </div>
+        <div className="space-y-1">
+          <Label>Linhas por página</Label>
+          <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setOffset(0) }}>
+            <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {[10, 20, 50].map((n) => (
+                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <DataTable<DimFonteRecurso>
@@ -96,26 +86,10 @@ export default function Fontes() {
         error={(error as Error | undefined)?.message ?? null}
       />
 
-      
-
       <div className="no-print flex items-center justify-between">
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={offset === 0}
-          onClick={() => setOffset((o) => Math.max(0, o - limit))}
-        >
-          ← Anterior
-        </button>
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={items.length < limit}
-          onClick={() => setOffset((o) => o + limit)}
-        >
-          Próxima →
-        </button>
+        <Button variant="outline" className="min-w-28" disabled={offset === 0} onClick={() => setOffset((o) => Math.max(0, o - limit))}>← Anterior</Button>
+        <Button variant="outline" className="min-w-28" disabled={items.length < limit} onClick={() => setOffset((o) => o + limit)}>Próxima →</Button>
       </div>
     </section>
   )
 }
-
-

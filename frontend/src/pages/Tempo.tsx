@@ -5,9 +5,12 @@ import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
 import { listTempo, deleteTempo } from '../lib/api'
 import type { DimTempo } from '../lib/types'
-import Modal from '../components/Modal'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import TempoForm from '../components/forms/TempoForm'
 import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select'
 
 export default function Tempo() {
   const [ano, setAno] = useState<string>('')
@@ -34,6 +37,23 @@ export default function Tempo() {
 
   const columns = useMemo<ColumnDef<DimTempo>[]>(
     () => [
+      {
+        id: 'acoes',
+        header: 'Ações',
+        cell: ({ row }) => (
+          <Button
+            className="no-print"
+            size="sm"
+            variant="destructive"
+            aria-label={`Excluir registro ${row.original.id}`}
+            onClick={() => {
+              if (confirm('Excluir este registro?')) delMut.mutate(row.original.id)
+            }}
+          >
+            Excluir
+          </Button>
+        ),
+      },
       { header: 'ID', accessorKey: 'id' },
       { header: 'Data', accessorKey: 'data' },
       { header: 'Ano', accessorKey: 'ano' },
@@ -51,22 +71,6 @@ export default function Tempo() {
           />
         ),
       },
-      {
-        header: 'Ações',
-        cell: ({ row }) => (
-          <Button
-            className="no-print"
-            size="sm"
-            variant="destructive"
-            aria-label={`Excluir registro ${row.original.id}`}
-            onClick={() => {
-              if (confirm('Excluir este registro?')) delMut.mutate(row.original.id)
-            }}
-          >
-            Excluir
-          </Button>
-        ),
-      },
     ],
     [],
   )
@@ -79,55 +83,28 @@ export default function Tempo() {
         <h2>Dimensão: Tempo</h2>
       </div>
 
-      <div className="no-print flex flex-wrap items-end gap-3">
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Ano</span>
-          <input
-            type="number"
-            className="w-28 rounded-md border bg-background px-2 py-1"
-            value={ano}
-            onChange={(e) => {
-              setAno(e.target.value)
-              setOffset(0)
-            }}
-            placeholder="2025"
-            aria-label="Filtro por ano"
-          />
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Mês</span>
-          <input
-            type="number"
-            min={1}
-            max={12}
-            className="w-24 rounded-md border bg-background px-2 py-1"
-            value={mes}
-            onChange={(e) => {
-              setMes(e.target.value)
-              setOffset(0)
-            }}
-            placeholder="1..12"
-            aria-label="Filtro por mês"
-          />
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Linhas por página</span>
-          <select
-            className="w-28 rounded-md border bg-background px-2 py-1"
-            value={limit}
-            onChange={(e) => {
-              setLimit(Number(e.target.value))
-              setOffset(0)
-            }}
-            aria-label="Linhas por página"
-          >
-            {[10, 20, 50].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="no-print grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+        <div className="space-y-1">
+          <Label htmlFor="f-ano">Ano</Label>
+          <Input id="f-ano" type="number" className="w-28" value={ano} placeholder="2025" aria-label="Filtro por ano"
+            onChange={(e) => { setAno(e.target.value); setOffset(0) }} />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="f-mes">Mês</Label>
+          <Input id="f-mes" type="number" min={1} max={12} className="w-24" value={mes} placeholder="1..12" aria-label="Filtro por mês"
+            onChange={(e) => { setMes(e.target.value); setOffset(0) }} />
+        </div>
+        <div className="space-y-1">
+          <Label>Linhas por página</Label>
+          <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setOffset(0) }}>
+            <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {[10,20,50].map(n => (
+                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="no-print">
@@ -161,10 +138,14 @@ export default function Tempo() {
           Próxima →
         </Button>
       </div>
-      <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Tempo">
-        <TempoForm onSuccess={() => setShowCreate(false)} />
-      </Modal>
+      <Dialog open={showCreate} onOpenChange={setShowCreate}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tempo</DialogTitle>
+          </DialogHeader>
+          <TempoForm onSuccess={() => setShowCreate(false)} />
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
-

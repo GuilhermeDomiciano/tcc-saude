@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import Layout from './Layout'
+import ErrorPage from './ErrorPage'
 import Dashboard from '../pages/Dashboard'
 import Tempo from '../pages/Tempo'
 import Territorios from '../pages/Territorios'
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Dashboard /> },
       { path: 'tempo', element: <Tempo /> },
@@ -36,4 +38,3 @@ export const router = createBrowserRouter([
 ])
 
 export default router
-

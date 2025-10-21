@@ -5,6 +5,10 @@ import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
 import { listPopFaixa, deletePopFaixa } from '../lib/api'
 import type { DimPopFaixaEtaria } from '../lib/types'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select'
 
 export default function PopFaixa() {
   const [territorioId, setTerritorioId] = useState<string>('')
@@ -31,19 +35,20 @@ export default function PopFaixa() {
 
   const columns = useMemo<ColumnDef<DimPopFaixaEtaria>[]>(
     () => [
+      {
+        id: 'acoes',
+        header: 'Ações',
+        cell: ({ row }) => (
+          <Button className="no-print" size="sm" variant="destructive" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>
+            Excluir
+          </Button>
+        ),
+      },
       { header: 'ID', accessorKey: 'id' },
       { header: 'Território', accessorKey: 'territorio_id' },
       { header: 'Ano', accessorKey: 'ano' },
       { header: 'Faixa Etária', accessorKey: 'faixa_etaria' },
       { header: 'Sexo', accessorKey: 'sexo' },
-      {
-        header: 'Ações',
-        cell: ({ row }) => (
-          <button className="no-print rounded-md border px-2 py-0.5 text-xs" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>
-            Excluir
-          </button>
-        ),
-      },
       { header: 'População', accessorKey: 'populacao' },
       {
         header: 'Proveniência',
@@ -67,50 +72,26 @@ export default function PopFaixa() {
         <h2>Dimensão: População por Faixa Etária</h2>
       </div>
 
-      <div className="no-print flex flex-wrap items-end gap-3">
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Território ID</span>
-          <input
-            type="number"
-            className="w-32 rounded-md border bg-background px-2 py-1"
-            value={territorioId}
-            onChange={(e) => {
-              setTerritorioId(e.target.value)
-              setOffset(0)
-            }}
-            placeholder="1"
-          />
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Ano</span>
-          <input
-            type="number"
-            className="w-28 rounded-md border bg-background px-2 py-1"
-            value={ano}
-            onChange={(e) => {
-              setAno(e.target.value)
-              setOffset(0)
-            }}
-            placeholder="2025"
-          />
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Linhas por página</span>
-          <select
-            className="w-28 rounded-md border bg-background px-2 py-1"
-            value={limit}
-            onChange={(e) => {
-              setLimit(Number(e.target.value))
-              setOffset(0)
-            }}
-          >
-            {[10, 20, 50].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="no-print grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+        <div className="space-y-1">
+          <Label htmlFor="f-territorio">Território ID</Label>
+          <Input id="f-territorio" type="number" className="w-32" value={territorioId} placeholder="1" onChange={(e) => { setTerritorioId(e.target.value); setOffset(0) }} />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="f-ano">Ano</Label>
+          <Input id="f-ano" type="number" className="w-28" value={ano} placeholder="2025" onChange={(e) => { setAno(e.target.value); setOffset(0) }} />
+        </div>
+        <div className="space-y-1">
+          <Label>Linhas por página</Label>
+          <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setOffset(0) }}>
+            <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {[10, 20, 50].map((n) => (
+                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <DataTable<DimPopFaixaEtaria>
@@ -120,49 +101,26 @@ export default function PopFaixa() {
         error={(error as Error | undefined)?.message ?? null}
       />
 
-      <div className="no-print flex items-end gap-2">
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Excluir por ID</span>
-          <input
-            type="number"
-            className="w-28 rounded-md border bg-background px-2 py-1"
-            value={deleteId}
-            onChange={(e) => setDeleteId(e.target.value)}
-            placeholder="id"
-          />
-        </label>
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={!deleteId || delMut.isPending}
-          onClick={() => {
+      <div className="no-print grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
+        <div className="space-y-1">
+          <Label htmlFor="del-id">Excluir por ID</Label>
+          <Input id="del-id" type="number" className="w-28" value={deleteId} placeholder="id" onChange={(e) => setDeleteId(e.target.value)} />
+        </div>
+        <div>
+          <Button disabled={!deleteId || delMut.isPending} onClick={() => {
             const id = Number(deleteId)
             if (!Number.isFinite(id)) return
             if (confirm('Confirmar exclusão?')) {
               delMut.mutate(id, { onSuccess: () => setDeleteId('') })
             }
-          }}
-        >
-          Excluir
-        </button>
+          }}>Excluir</Button>
+        </div>
       </div>
 
       <div className="no-print flex items-center justify-between">
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={offset === 0}
-          onClick={() => setOffset((o) => Math.max(0, o - limit))}
-        >
-          ← Anterior
-        </button>
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={items.length < limit}
-          onClick={() => setOffset((o) => o + limit)}
-        >
-          Próxima →
-        </button>
+        <Button variant="outline" className="min-w-28" disabled={offset === 0} onClick={() => setOffset((o) => Math.max(0, o - limit))}>← Anterior</Button>
+        <Button variant="outline" className="min-w-28" disabled={items.length < limit} onClick={() => setOffset((o) => o + limit)}>Próxima →</Button>
       </div>
     </section>
   )
 }
-

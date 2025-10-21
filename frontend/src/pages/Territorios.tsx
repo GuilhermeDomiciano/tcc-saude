@@ -5,9 +5,12 @@ import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
 import { listTerritorios, deleteTerritorio } from '../lib/api'
 import type { DimTerritorio } from '../lib/types'
-import Modal from '../components/Modal'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import TerritorioForm from '../components/forms/TerritorioForm'
 import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select'
 
 export default function Territorios() {
   const [uf, setUf] = useState<string>('')
@@ -35,14 +38,8 @@ export default function Territorios() {
 
   const columns = useMemo<ColumnDef<DimTerritorio>[]>(
     () => [
-      { header: 'ID', accessorKey: 'id' },
-      { header: 'Município (IBGE)', accessorKey: 'cod_ibge_municipio' },
-      { header: 'Nome', accessorKey: 'nome' },
-      { header: 'UF', accessorKey: 'uf' },
-      { header: 'Área km²', accessorKey: 'area_km2' },
-      { header: 'Pop. Censo 2022', accessorKey: 'pop_censo_2022' },
-      { header: 'Pop. Estim. 2024', accessorKey: 'pop_estim_2024' },
       {
+        id: 'acoes',
         header: 'Ações',
         cell: ({ row }) => (
           <div className="no-print flex gap-2">
@@ -62,6 +59,13 @@ export default function Territorios() {
           </div>
         ),
       },
+      { header: 'ID', accessorKey: 'id' },
+      { header: 'Município (IBGE)', accessorKey: 'cod_ibge_municipio' },
+      { header: 'Nome', accessorKey: 'nome' },
+      { header: 'UF', accessorKey: 'uf' },
+      { header: 'Área km²', accessorKey: 'area_km2' },
+      { header: 'Pop. Censo 2022', accessorKey: 'pop_censo_2022' },
+      { header: 'Pop. Estim. 2024', accessorKey: 'pop_estim_2024' },
       {
         header: 'Proveniência',
         cell: ({ row }) => (
@@ -84,55 +88,30 @@ export default function Territorios() {
         <h2>Dimensão: Territórios</h2>
       </div>
 
-      <div className="no-print flex flex-wrap items-end gap-3">
-        <label className="text-sm">
-          <span className="block text-muted-foreground">UF</span>
-          <input
-            className="w-20 uppercase rounded-md border bg-background px-2 py-1"
-            maxLength={2}
-            value={uf}
-            onChange={(e) => {
-              setUf(e.target.value.toUpperCase())
-              setOffset(0)
-            }}
-            placeholder="RS"
+      <div className="no-print grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+        <div className="space-y-1">
+          <Label htmlFor="f-uf">UF</Label>
+          <Input id="f-uf" className="w-20 uppercase" maxLength={2} value={uf} placeholder="RS"
             aria-describedby="ajuda-uf"
-            aria-label="Filtro por UF"
-          />
+            onChange={(e) => { setUf(e.target.value.toUpperCase()); setOffset(0) }} />
           <span id="ajuda-uf" className="block text-xs text-muted-foreground">2 letras, ex.: RS</span>
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">IBGE</span>
-          <input
-            className="w-32 rounded-md border bg-background px-2 py-1"
-            value={ibge}
-            onChange={(e) => {
-              setIbge(e.target.value)
-              setOffset(0)
-            }}
-            placeholder="4300000"
-            inputMode="numeric"
-            aria-label="Filtro por código IBGE"
-          />
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Linhas por página</span>
-          <select
-            className="w-28 rounded-md border bg-background px-2 py-1"
-            value={limit}
-            onChange={(e) => {
-              setLimit(Number(e.target.value))
-              setOffset(0)
-            }}
-            aria-label="Linhas por página"
-          >
-            {[10, 20, 50].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="f-ibge">IBGE</Label>
+          <Input id="f-ibge" className="w-32" value={ibge} placeholder="4300000" inputMode="numeric"
+            onChange={(e) => { setIbge(e.target.value); setOffset(0) }} />
+        </div>
+        <div className="space-y-1">
+          <Label>Linhas por página</Label>
+          <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setOffset(0) }}>
+            <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {[10,20,50].map(n => (
+                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="no-print">
@@ -166,26 +145,35 @@ export default function Territorios() {
           Próxima →
         </Button>
       </div>
-      <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Novo Território">
-        <TerritorioForm onSuccess={() => setShowCreate(false)} />
-      </Modal>
-      <Modal open={!!editing} onClose={() => setEditing(null)} title="Editar Território">
-        {editing && (
-          <TerritorioForm
-            initial={{
-              id: editing.id,
-              cod_ibge_municipio: editing.cod_ibge_municipio,
-              nome: editing.nome,
-              uf: editing.uf,
-              area_km2: editing.area_km2 ?? undefined,
-              pop_censo_2022: editing.pop_censo_2022 ?? undefined,
-              pop_estim_2024: editing.pop_estim_2024 ?? undefined,
-            }}
-            onSuccess={() => setEditing(null)}
-          />
-        )}
-      </Modal>
+      <Dialog open={showCreate} onOpenChange={setShowCreate}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Novo Território</DialogTitle>
+          </DialogHeader>
+          <TerritorioForm onSuccess={() => setShowCreate(false)} />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Território</DialogTitle>
+          </DialogHeader>
+          {editing && (
+            <TerritorioForm
+              initial={{
+                id: editing.id,
+                cod_ibge_municipio: editing.cod_ibge_municipio,
+                nome: editing.nome,
+                uf: editing.uf,
+                area_km2: editing.area_km2 ?? undefined,
+                pop_censo_2022: editing.pop_censo_2022 ?? undefined,
+                pop_estim_2024: editing.pop_estim_2024 ?? undefined,
+              }}
+              onSuccess={() => setEditing(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
-

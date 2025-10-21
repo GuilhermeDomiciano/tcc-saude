@@ -5,6 +5,9 @@ import DataTable from '../components/DataTable'
 import ProvenanceBadges from '../components/Provenance'
 import { listEquipes, deleteEquipe } from '../lib/api'
 import type { DimEquipe } from '../lib/types'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select'
 
 export default function Equipes() {
   const [tipo, setTipo] = useState<string>('')
@@ -30,20 +33,21 @@ export default function Equipes() {
 
   const columns = useMemo<ColumnDef<DimEquipe>[]>(
     () => [
+      {
+        id: 'acoes',
+        header: 'Ações',
+        cell: ({ row }) => (
+          <Button className="no-print" size="sm" variant="destructive" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>
+            Excluir
+          </Button>
+        ),
+      },
       { header: 'ID', accessorKey: 'id' },
       { header: 'ID Equipe', accessorKey: 'id_equipe' },
       { header: 'Tipo', accessorKey: 'tipo' },
       { header: 'Unidade', accessorKey: 'unidade_id' },
       { header: 'Território', accessorKey: 'territorio_id' },
       { header: 'Ativo', accessorKey: 'ativo' },
-      {
-        header: 'Ações',
-        cell: ({ row }) => (
-          <button className="no-print rounded-md border px-2 py-0.5 text-xs" onClick={() => { if (confirm('Excluir este registro?')) delMut.mutate(row.original.id) }}>
-            Excluir
-          </button>
-        ),
-      },
       {
         header: 'Proveniência',
         cell: ({ row }) => (
@@ -66,59 +70,39 @@ export default function Equipes() {
         <h2>Dimensão: Equipes</h2>
       </div>
 
-      
-
-      <div className="no-print flex flex-wrap items-end gap-3">
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Tipo</span>
-          <select
-            className="w-40 rounded-md border bg-background px-2 py-1"
-            value={tipo}
-            onChange={(e) => {
-              setTipo(e.target.value)
-              setOffset(0)
-            }}
-          >
-            <option value="">Todos</option>
-            {['ESF', 'ESB', 'ACS', 'OUTROS'].map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Ativo</span>
-          <select
-            className="w-32 rounded-md border bg-background px-2 py-1"
-            value={ativo}
-            onChange={(e) => {
-              setAtivo(e.target.value)
-              setOffset(0)
-            }}
-          >
-            <option value="">Todos</option>
-            <option value="true">Sim</option>
-            <option value="false">Não</option>
-          </select>
-        </label>
-        <label className="text-sm">
-          <span className="block text-muted-foreground">Linhas por página</span>
-          <select
-            className="w-28 rounded-md border bg-background px-2 py-1"
-            value={limit}
-            onChange={(e) => {
-              setLimit(Number(e.target.value))
-              setOffset(0)
-            }}
-          >
-            {[10, 20, 50].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="no-print grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+        <div className="space-y-1">
+          <Label>Tipo</Label>
+          <Select value={tipo || undefined} onValueChange={(v) => { setTipo(v); setOffset(0) }}>
+            <SelectTrigger className="w-40"><SelectValue placeholder="Todos" /></SelectTrigger>
+            <SelectContent>
+              {['ESF', 'ESB', 'ACS', 'OUTROS'].map((t) => (
+                <SelectItem key={t} value={t}>{t}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label>Ativo</Label>
+          <Select value={ativo || undefined} onValueChange={(v) => { setAtivo(v); setOffset(0) }}>
+            <SelectTrigger className="w-32"><SelectValue placeholder="Todos" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="true">Sim</SelectItem>
+              <SelectItem value="false">Não</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label>Linhas por página</Label>
+          <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setOffset(0) }}>
+            <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {[10, 20, 50].map((n) => (
+                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <DataTable<DimEquipe>
@@ -129,23 +113,9 @@ export default function Equipes() {
       />
 
       <div className="no-print flex items-center justify-between">
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={offset === 0}
-          onClick={() => setOffset((o) => Math.max(0, o - limit))}
-        >
-          ← Anterior
-        </button>
-        <button
-          className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-          disabled={items.length < limit}
-          onClick={() => setOffset((o) => o + limit)}
-        >
-          Próxima →
-        </button>
+        <Button variant="outline" className="min-w-28" disabled={offset === 0} onClick={() => setOffset((o) => Math.max(0, o - limit))}>← Anterior</Button>
+        <Button variant="outline" className="min-w-28" disabled={items.length < limit} onClick={() => setOffset((o) => o + limit)}>Próxima →</Button>
       </div>
     </section>
   )
 }
-
-
