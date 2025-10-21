@@ -117,6 +117,31 @@ def create_app() -> FastAPI:
                         DevDimPopFaixaEtaria(territorio_id=2, ano=2025, faixa_etaria="0-4", sexo="F", populacao=2700),
                     ])
                     session.commit()
+                # Seed leve para RDQA (referência e cálculo) se vazio
+                try:
+                    exists_ref = session.exec(select(DevRefIndicador).limit(1)).first()
+                except Exception:
+                    exists_ref = None
+                if not exists_ref:
+                    session.add_all([
+                        DevRefIndicador(indicador="cov_aps", chave="mun=1", periodo="2025-01", valor=100.0),
+                        DevRefIndicador(indicador="cov_aps", chave="mun=2", periodo="2025-01", valor=80.0),
+                        DevRefIndicador(indicador="cov_aps", chave="mun=1", periodo="2025-02", valor=105.0),
+                        DevRefIndicador(indicador="cov_aps", chave="mun=2", periodo="2025-02", valor=85.0),
+                    ])
+                    session.commit()
+                try:
+                    exists_calc = session.exec(select(DevCalcIndicador).limit(1)).first()
+                except Exception:
+                    exists_calc = None
+                if not exists_calc:
+                    session.add_all([
+                        DevCalcIndicador(indicador="cov_aps", chave="mun=1", periodo="2025-01", valor=95.0),
+                        DevCalcIndicador(indicador="cov_aps", chave="mun=2", periodo="2025-01", valor=82.0),
+                        DevCalcIndicador(indicador="cov_aps", chave="mun=1", periodo="2025-02", valor=110.0),
+                        # mun=2 em 2025-02 propositalmente ausente para demonstrar faltante
+                    ])
+                    session.commit()
     return app
 
 

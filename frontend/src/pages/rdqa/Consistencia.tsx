@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { exportRDQAPdf } from '../../lib/api'
+import { useEffect, useRef, useState } from 'react'
+import { exportRDQAPdf, getRDQAConsistencia, getRDQAConsistenciaDetalhes } from '../../lib/api'
 import { buildRDQAHtml } from '../../lib/rdqa'
 import QRCode from 'qrcode'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,36 @@ export default function RdqaConsistencia() {
   const [municipio, setMunicipio] = useState('')
   const [periodo, setPeriodo] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resumo, setResumo] = useState<Array<{ indicador: string; periodo?: string; mape?: number; pares: number }>>([])
+  const [detalhes, setDetalhes] = useState<Record<string, Array<{ chave: string; periodo: string; ref: number; calc?: number; erro_pct?: number }>>>({})
+  const [loadingData, setLoadingData] = useState(false)
+
+  const carregar = async () => {
+    setLoadingData(true)
+    try {
+      const data = await getRDQAConsistencia(periodo || undefined)
+      setResumo(data)
+      setDetalhes({})
+    } catch (e) {
+      alert(e instanceof Error ? e.message : String(e))
+    } finally {
+      setLoadingData(false)
+    }
+  }
+  
+  useEffect(() => {
+    carregar()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const carregarDetalhes = async (indicador: string) => {
+    try {
+      const data = await getRDQAConsistenciaDetalhes(indicador, periodo || undefined)
+      setDetalhes((d) => ({ ...d, [indicador]: data }))
+    } catch (e) {
+      alert(e instanceof Error ? e.message : String(e))
+    }
+  }
 
   const onExport = async () => {
     if (!contentRef.current) return
@@ -59,7 +89,10 @@ export default function RdqaConsistencia() {
         </div>
         <div className="space-y-1">
           <Label className="invisible">Exportar</Label>
-          <Button onClick={onExport} disabled={loading}>{loading ? 'Gerando…' : 'Exportar PDF'}</Button>
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={carregar} disabled={loadingData}>{loadingData ? 'Carregando…' : 'Carregar'}</Button>
+            <Button onClick={onExport} disabled={loading}>{loading ? 'Gerando…' : 'Exportar PDF'}</Button>
+          </div>
         </div>
       </div>
 
@@ -73,29 +106,53 @@ export default function RdqaConsistencia() {
             <TableHeader>
               <TableRow>
                 <TableHead>Indicador</TableHead>
-                <TableHead>Fonte A</TableHead>
-                <TableHead>Fonte B</TableHead>
-                <TableHead>Diferença %</TableHead>
+                <TableHead>MAPE</TableHead>
+                <TableHead>Pares</TableHead>
+                <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>Nascidos vivos</TableCell>
-                <TableCell>1020</TableCell>
-                <TableCell>1000</TableCell>
-                <TableCell>+2,0%</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Óbitos gerais</TableCell>
-                <TableCell>520</TableCell>
-                <TableCell>515</TableCell>
-                <TableCell>+1,0%</TableCell>
-              </TableRow>
+              {resumo.map((r) => (
+                <TableRow key={r.indicador}>
+                  <TableCell>{r.indicador}</TableCell>
+                  <TableCell>{r.mape != null ? `${r.mape.toFixed(2)}%` : '—'}</TableCell>
+                  <TableCell>{r.pares}</TableCell>
+                  <TableCell>
+                    <Button size="sm" variant="outline" onClick={() => carregarDetalhes(r.indicador)}>Detalhes</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
+          {Object.entries(detalhes).map(([ind, rows]) => (
+            <div key={ind} className="mt-4">
+              <h4 className="font-medium">{ind} — Detalhes</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Chave</TableHead>
+                    <TableHead>Período</TableHead>
+                    <TableHead>Ref</TableHead>
+                    <TableHead>Calc</TableHead>
+                    <TableHead>Erro %</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rows.map((d) => (
+                    <TableRow key={`${d.chave}-${d.periodo}`}>
+                      <TableCell>{d.chave}</TableCell>
+                      <TableCell>{d.periodo}</TableCell>
+                      <TableCell>{d.ref}</TableCell>
+                      <TableCell>{d.calc ?? '—'}</TableCell>
+                      <TableCell>{d.erro_pct != null ? `${d.erro_pct.toFixed(2)}%` : '—'}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ))}
         </div>
       </div>
     </section>
   )
 }
-

@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { exportRDQAPdf } from '../../lib/api'
+import { useEffect, useRef, useState } from 'react'
+import { exportRDQAPdf, getRDQACobertura } from '../../lib/api'
 import { buildRDQAHtml } from '../../lib/rdqa'
 import QRCode from 'qrcode'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,25 @@ export default function RdqaCobertura() {
   const [territorioId, setTerritorioId] = useState('')
   const [periodo, setPeriodo] = useState('')
   const [loading, setLoading] = useState(false)
+  const [dados, setDados] = useState<{ percent: number; total: number; gerados: number; faltantes: Array<{ quadro: string; periodo: string; motivo: string }> } | null>(null)
+  const [loadingData, setLoadingData] = useState(false)
+
+  const carregar = async () => {
+    setLoadingData(true)
+    try {
+      const d = await getRDQACobertura(periodo || undefined)
+      setDados(d)
+    } catch (e) {
+      alert(e instanceof Error ? e.message : String(e))
+    } finally {
+      setLoadingData(false)
+    }
+  }
+  
+  useEffect(() => {
+    carregar()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const onExport = async () => {
     if (!contentRef.current) return
@@ -58,8 +77,11 @@ export default function RdqaCobertura() {
           <Input id="f-periodo" className="w-64" value={periodo} onChange={(e) => setPeriodo(e.target.value)} placeholder="Ex.: 2024-01 a 2024-12" />
         </div>
         <div className="space-y-1">
-          <Label className="invisible">Exportar</Label>
-          <Button onClick={onExport} disabled={loading}>{loading ? 'Gerando…' : 'Exportar PDF'}</Button>
+          <Label className="invisible">Ações</Label>
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={carregar} disabled={loadingData}>{loadingData ? 'Carregando…' : 'Carregar'}</Button>
+            <Button onClick={onExport} disabled={loading}>{loading ? 'Gerando…' : 'Exportar PDF'}</Button>
+          </div>
         </div>
       </div>
 
@@ -69,25 +91,31 @@ export default function RdqaCobertura() {
           <p className="text-xs text-muted-foreground">{territorioId || '—'} • {periodo || '—'}</p>
         </div>
         <div ref={contentRef} id="rdqa-print">
+          <div className="mb-3 text-sm text-muted-foreground">
+            {dados ? (
+              <span>Cobertura: {dados.percent.toFixed(2)}% ({dados.gerados}/{dados.total})</span>
+            ) : (
+              <span>Informe período e clique em Carregar.</span>
+            )}
+          </div>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Tempo</TableHead>
-                <TableHead>Equipe</TableHead>
-                <TableHead>Cobertura %</TableHead>
+                <TableHead>Ações</TableHead>
+                <TableHead>Quadro</TableHead>
+                <TableHead>Período</TableHead>
+                <TableHead>Motivo</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>2024-01</TableCell>
-                <TableCell>ESF 01</TableCell>
-                <TableCell>72,3%</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>2024-02</TableCell>
-                <TableCell>ESF 01</TableCell>
-                <TableCell>73,1%</TableCell>
-              </TableRow>
+              {dados?.faltantes?.map((f) => (
+                <TableRow key={`${f.quadro}-${f.periodo}`}>
+                  <TableCell>—</TableCell>
+                  <TableCell>{f.quadro}</TableCell>
+                  <TableCell>{f.periodo}</TableCell>
+                  <TableCell>{f.motivo}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
@@ -95,4 +123,3 @@ export default function RdqaCobertura() {
     </section>
   )
 }
-

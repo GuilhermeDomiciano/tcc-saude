@@ -67,24 +67,26 @@ curl "http://localhost:8000/dw/tempo?ano=2025&mes=1"
   - `alembic revision -m "sua_mudanca" --autogenerate`
 
 
-## RDQA – Endpoints e Exemplos
+## RDQA ï¿½ Endpoints e Exemplos
 
-- GET /public/verificar?exec_id=...&hash=... – Verificação pública de artefatos.
+- GET /public/verificar?exec_id=...&hash=... ï¿½ Verificaï¿½ï¿½o pï¿½blica de artefatos.
   - Ex.: curl "http://localhost:8000/public/verificar?exec_id=UUID&hash=HASH"
 
-- GET /rdqa/consistencia?periodo=2025-01 – Lista indicadores com MAPE.
-- GET /rdqa/consistencia/{indicador}/detalhes?periodo=2025-01 – Drill-down por indicador.
-- GET /rdqa/cobertura?periodo=2025-01 – Cobertura de quadros gerados.
-- GET /rdqa/diff?periodo_atual=2025-02&periodo_anterior=2025-01&indicadores=cov_aps – Diferenças entre períodos.
+- GET /rdqa/consistencia?periodo=2025-01 ï¿½ Lista indicadores com MAPE.
+- GET /rdqa/consistencia/{indicador}/detalhes?periodo=2025-01 ï¿½ Drill-down por indicador.
+- GET /rdqa/cobertura?periodo=2025-01 ï¿½ Cobertura de quadros gerados.
+- GET /rdqa/diff?periodo_atual=2025-02&periodo_anterior=2025-01&indicadores=cov_aps ï¿½ Diferenï¿½as entre perï¿½odos.
 
-- POST /rdqa/export/pdf – Gera PDF a partir de HTML/URL.
+- POST /rdqa/export/pdf ï¿½ Gera PDF a partir de HTML/URL.
   - Body: { "html": "<html>...</html>", "format": "A4", "margin_mm": 12 }
   - Headers de resposta: X-Exec-Id, X-Hash.
 
-- POST /rdqa/export/pacote – Gera pacote ZIP de reprodutibilidade.
+- POST /rdqa/export/pacote ï¿½ Gera pacote ZIP de reprodutibilidade.
   - Headers de resposta: X-Exec-Id, X-Hash.
   - Ex.: curl -X POST -H "X-API-Key: " -o rdqa.zip http://localhost:8000/rdqa/export/pacote
 
 Notas:
-- Quando API_KEY estiver definida, os endpoints de geração (/rdqa/export/*) exigem o header X-API-Key.
-- O frontend usa X-Exec-Id/X-Hash para montar QR Code e verificação pública.
+- Quando API_KEY estiver definida, os endpoints de geraï¿½ï¿½o (/rdqa/export/*) exigem o header X-API-Key.
+- O frontend usa X-Exec-Id/X-Hash para montar QR Code e verificaï¿½ï¿½o pï¿½blica.
+
+

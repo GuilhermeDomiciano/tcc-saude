@@ -4,7 +4,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.core.db import get_session
 from app.core.security import require_api_key
@@ -49,7 +49,11 @@ repro_pkg = ReproducibilidadeService()
         }
     },
 )
-async def export_pdf(payload: ExportPDFIn, session: Session = Depends(get_session), _: None = Depends(require_api_key)):
+async def export_pdf(
+    payload: ExportPDFIn,
+    session: Session = Depends(get_session),
+    _: None = Depends(require_api_key),
+):
     try:
         if not payload.html and not payload.url:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="informe 'html' ou 'url'")
@@ -138,7 +142,11 @@ def diff(
         }
     },
 )
-def export_pacote(periodo: Optional[str] = None, session: Session = Depends(get_session), _: None = Depends(require_api_key)):
+def export_pacote(
+    periodo: Optional[str] = None,
+    session: Session = Depends(get_session),
+    _: None = Depends(require_api_key),
+):
     try:
         zip_bytes, exec_id, pkg_hash = repro_pkg.gerar_pacote(session, periodo=periodo)
         # registrar artefato

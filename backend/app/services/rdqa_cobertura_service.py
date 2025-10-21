@@ -17,13 +17,16 @@ class RDQACoberturaService:
 
     def cobertura(self, session: Session, periodo: Optional[str] = None) -> Dict:
         Ref, Calc = self._models(session)
-        stmt_ref = select(Ref)
-        stmt_calc = select(Calc)
-        if periodo:
-            stmt_ref = stmt_ref.where(Ref.periodo == periodo)
-            stmt_calc = stmt_calc.where(Calc.periodo == periodo)
-        ref_rows = session.exec(stmt_ref).all()
-        calc_rows = session.exec(stmt_calc).all()
+        try:
+            stmt_ref = select(Ref)
+            stmt_calc = select(Calc)
+            if periodo:
+                stmt_ref = stmt_ref.where(Ref.periodo == periodo)
+                stmt_calc = stmt_calc.where(Calc.periodo == periodo)
+            ref_rows = session.exec(stmt_ref).all()
+            calc_rows = session.exec(stmt_calc).all()
+        except Exception:
+            ref_rows, calc_rows = [], []
 
         ref_keys = {(r.indicador, r.chave, r.periodo) for r in ref_rows}
         calc_keys = {(c.indicador, c.chave, c.periodo) for c in calc_rows}
@@ -44,4 +47,3 @@ class RDQACoberturaService:
             "gerados": gerados,
             "faltantes": faltantes_items,
         }
-

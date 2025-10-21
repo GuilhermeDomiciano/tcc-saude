@@ -23,6 +23,10 @@ export const routes = {
   fontes: '/dw/fontes',
   fatosCobertura: '/dw/fatos/cobertura',
   rdqaExportPdf: '/rdqa/export/pdf',
+  rdqaConsistencia: '/rdqa/consistencia',
+  rdqaCobertura: '/rdqa/cobertura',
+  rdqaDiff: '/rdqa/diff',
+  rdqaExportPackage: '/rdqa/export/pacote',
 } as const
 
 export type ListParams = {
@@ -82,6 +86,33 @@ export async function exportRDQAPdf(payload: ExportPdfPayload): Promise<{ blob: 
     }
     throw err
   }
+}
+
+export async function getRDQAConsistencia(periodo?: string): Promise<Array<{ indicador: string; periodo?: string; mape?: number; pares: number }>> {
+  const res = await api.get(routes.rdqaConsistencia, { params: { periodo } })
+  return res.data
+}
+
+export async function getRDQAConsistenciaDetalhes(indicador: string, periodo?: string): Promise<Array<{ indicador: string; chave: string; periodo: string; ref: number; calc?: number; erro_abs?: number; erro_pct?: number }>> {
+  const res = await api.get(`${routes.rdqaConsistencia}/${encodeURIComponent(indicador)}/detalhes`, { params: { periodo } })
+  return res.data
+}
+
+export async function getRDQACobertura(periodo?: string): Promise<{ percent: number; total: number; gerados: number; faltantes: Array<{ quadro: string; periodo: string; motivo: string }> }> {
+  const res = await api.get(routes.rdqaCobertura, { params: { periodo } })
+  return res.data
+}
+
+export async function getRDQADiff(periodoAtual: string, periodoAnterior: string, indicadores?: string): Promise<Array<{ indicador: string; chave: string; valor_atual?: number; valor_anterior?: number; delta?: number; tendencia: string }>> {
+  const res = await api.get(routes.rdqaDiff, { params: { periodo_atual: periodoAtual, periodo_anterior: periodoAnterior, indicadores } })
+  return res.data
+}
+
+export async function exportRDQAPackage(params?: { periodo?: string }): Promise<{ blob: Blob; execId?: string; hash?: string }> {
+  const res = await api.post(routes.rdqaExportPackage, null, { params, responseType: 'blob' })
+  const execId = res.headers?.['x-exec-id'] as string | undefined
+  const hash = res.headers?.['x-hash'] as string | undefined
+  return { blob: res.data as Blob, execId, hash }
 }
 
 import type { DimTempoCreate, DimTempoUpdate, DimTerritorioCreate, DimTerritorioUpdate } from './types'

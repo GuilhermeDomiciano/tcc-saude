@@ -48,10 +48,13 @@ class ConsistenciaService:
 
     def listar_indicadores(self, session: Session, periodo: Optional[str] = None) -> List[IndicadorMAPE]:
         Ref, Calc = self._models(session)
-        stmt_ref = select(Ref.indicador).distinct()
-        if periodo:
-            stmt_ref = stmt_ref.where(Ref.periodo == periodo)
-        indicadores = [row[0] if isinstance(row, tuple) else row for row in session.exec(stmt_ref).all()]
+        try:
+            stmt_ref = select(Ref.indicador).distinct()
+            if periodo:
+                stmt_ref = stmt_ref.where(Ref.periodo == periodo)
+            indicadores = [row[0] if isinstance(row, tuple) else row for row in session.exec(stmt_ref).all()]
+        except Exception:
+            return []
         out: List[IndicadorMAPE] = []
         for ind in indicadores:
             out.append(self.calcular_mape(session, ind, periodo))
@@ -59,13 +62,16 @@ class ConsistenciaService:
 
     def drill_down(self, session: Session, indicador: str, periodo: Optional[str] = None) -> List[Dict[str, float | str]]:
         Ref, Calc = self._models(session)
-        stmt_ref = select(Ref).where(Ref.indicador == indicador)
-        stmt_calc = select(Calc).where(Calc.indicador == indicador)
-        if periodo:
-            stmt_ref = stmt_ref.where(Ref.periodo == periodo)
-            stmt_calc = stmt_calc.where(Calc.periodo == periodo)
-        ref_rows = session.exec(stmt_ref).all()
-        calc_rows = session.exec(stmt_calc).all()
+        try:
+            stmt_ref = select(Ref).where(Ref.indicador == indicador)
+            stmt_calc = select(Calc).where(Calc.indicador == indicador)
+            if periodo:
+                stmt_ref = stmt_ref.where(Ref.periodo == periodo)
+                stmt_calc = stmt_calc.where(Calc.periodo == periodo)
+            ref_rows = session.exec(stmt_ref).all()
+            calc_rows = session.exec(stmt_calc).all()
+        except Exception:
+            return []
         calc_map: Dict[Tuple[str, str], float] = {(c.chave, c.periodo): float(c.valor) for c in calc_rows}
         out: List[Dict[str, float | str]] = []
         for r in ref_rows:
@@ -87,4 +93,3 @@ class ConsistenciaService:
         # ordenar por maior erro_pct primeiro (quando existir)
         out.sort(key=lambda d: d.get("erro_pct", -1.0), reverse=True)
         return out
-

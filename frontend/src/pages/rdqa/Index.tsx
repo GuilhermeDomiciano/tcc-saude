@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { exportRDQAPackage } from '../../lib/api'
 
 export default function RdqaIndex() {
   const cards = [
@@ -21,6 +22,22 @@ export default function RdqaIndex() {
         <p>Escolha um quadro para visualizar, filtrar e exportar em PDF.</p>
       </div>
 
+      <div className="no-print">
+        <Button onClick={async () => {
+          try {
+            const { blob } = await exportRDQAPackage()
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = 'rdqa-package.zip'
+            a.click()
+            URL.revokeObjectURL(url)
+          } catch (e) {
+            alert(e instanceof Error ? e.message : String(e))
+          }
+        }}>Baixar Pacote de Reprodutibilidade</Button>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {cards.map((c) => (
           <div key={c.to} className="rounded-lg border p-4 bg-card">
@@ -35,4 +52,3 @@ export default function RdqaIndex() {
     </section>
   )
 }
-
