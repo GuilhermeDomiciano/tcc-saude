@@ -25,9 +25,8 @@ Objetivo: interface web para cadastrar e consultar dimensões analíticas (Tempo
   - `/rdqa` (hub dos quadros) e sub-rotas por quadro (ex.: `/rdqa/consistencia`, `/rdqa/cobertura`).
 
 ## 5) Listas (GET)
-- [ ] Para cada rota, página com:
+- [x] Para cada rota, página com:
   - Tabela (React Table) com paginação (`limit/offset`) e filtros (ex.: ano/mês em Tempo; UF/IBGE em Território; território/ano em Pop-Faixa).
-  - Botões: Novo, Editar, Excluir.
   - Estados de carregando/erro (React Query: `useQuery`).
 - [ ] Badges de proveniência nos cards/tabelas (exibir `fonte/periodo/versao`).
 
