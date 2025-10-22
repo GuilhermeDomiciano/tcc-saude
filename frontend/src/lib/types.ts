@@ -117,3 +117,52 @@ export interface DimFonteRecursoOut {
 export type DimFonteRecurso = DimFonteRecursoOut & Proveniencia
 
 export type FatoCoberturaAPSOut = Record<string, unknown>
+
+export interface RAGResumoItem {
+  territorio_id: number
+  territorio_nome?: string | null
+  periodo: string
+  dotacao_atualizada?: number | null
+  receita_realizada?: number | null
+  empenhado?: number | null
+  liquidado?: number | null
+  pago?: number | null
+  execucao_percentual?: number | null
+  producao_total?: number | null
+  metas_cumpridas: number
+  metas_total: number
+}
+
+export interface RAGResumo {
+  periodos: string[]
+  itens: RAGResumoItem[]
+}
+
+export interface RAGFinanceiroItem {
+  territorio_id: number
+  territorio_nome?: string | null
+  periodo: string
+  dotacao_atualizada?: number | null
+  receita_realizada?: number | null
+  empenhado?: number | null
+  liquidado?: number | null
+  pago?: number | null
+}
+
+export interface RAGProducaoItem {
+  territorio_id: number
+  territorio_nome?: string | null
+  periodo: string
+  tipo: string
+  quantidade?: number | null
+}
+
+export interface RAGMetaItem {
+  territorio_id: number
+  territorio_nome?: string | null
+  periodo: string
+  indicador: string
+  meta_planejada?: number | null
+  meta_executada?: number | null
+  cumprida?: boolean | null
+}

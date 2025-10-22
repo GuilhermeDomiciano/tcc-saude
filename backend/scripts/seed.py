@@ -31,13 +31,31 @@ def iter_months(start: date, end: date) -> Iterable[date]:
 
 def seed_dev_sqlite(engine):
     from app.models.dev_lite import (
-        DevDimTerritorio, DevDimUnidade, DevDimTempo,
-        DevDimPopFaixaEtaria, DevDimFonteRecurso, DevDimEquipe,
+        DevDimTerritorio,
+        DevDimUnidade,
+        DevDimTempo,
+        DevDimPopFaixaEtaria,
+        DevDimFonteRecurso,
+        DevDimEquipe,
+        DevFatoRAGFinanceiro,
+        DevFatoRAGProducao,
+        DevFatoRAGMeta,
+        DevRefIndicador,
+        DevCalcIndicador,
     )
 
     SQLModel.metadata.create_all(bind=engine, tables=[
-        DevDimTerritorio.__table__, DevDimUnidade.__table__, DevDimTempo.__table__,
-        DevDimPopFaixaEtaria.__table__, DevDimFonteRecurso.__table__, DevDimEquipe.__table__,
+        DevDimTerritorio.__table__,
+        DevDimUnidade.__table__,
+        DevDimTempo.__table__,
+        DevDimPopFaixaEtaria.__table__,
+        DevDimFonteRecurso.__table__,
+        DevDimEquipe.__table__,
+        DevFatoRAGFinanceiro.__table__,
+        DevFatoRAGProducao.__table__,
+        DevFatoRAGMeta.__table__,
+        DevRefIndicador.__table__,
+        DevCalcIndicador.__table__,
     ])
 
     random.seed(42)
@@ -47,7 +65,19 @@ def seed_dev_sqlite(engine):
 
     with Session(engine) as session:
         # wipe
-        for model in [DevDimEquipe, DevDimFonteRecurso, DevDimPopFaixaEtaria, DevDimUnidade, DevDimTempo, DevDimTerritorio]:
+        for model in [
+            DevFatoRAGMeta,
+            DevFatoRAGProducao,
+            DevFatoRAGFinanceiro,
+            DevCalcIndicador,
+            DevRefIndicador,
+            DevDimEquipe,
+            DevDimFonteRecurso,
+            DevDimPopFaixaEtaria,
+            DevDimUnidade,
+            DevDimTempo,
+            DevDimTerritorio,
+        ]:
             session.exec(delete(model))
         session.commit()
 
@@ -101,6 +131,19 @@ def seed_dev_sqlite(engine):
         session.add_all(unidades)
         session.commit()
 
+        # Indicadores RDQA (referência e calculado) para cenários de consistência/diff
+        ref_rows = []
+        calc_rows = []
+        for t in terr_rows[:10]:
+            ref_val = random.uniform(70, 95)
+            calc_val = ref_val * random.uniform(0.9, 1.1)
+            chave = f"mun={t.id}"
+            ref_rows.append(DevRefIndicador(indicador="cov_aps", chave=chave, periodo="2024-12", valor=round(ref_val, 2)))
+            calc_rows.append(DevCalcIndicador(indicador="cov_aps", chave=chave, periodo="2024-12", valor=round(calc_val, 2)))
+        session.add_all(ref_rows)
+        session.add_all(calc_rows)
+        session.commit()
+
         # População por faixa etária e sexo 2020..2025
         faixas = ["0-4","5-9","10-14","15-19","20-29","30-39","40-49","50-59","60-69","70-79","80+"]
         pop_rows = []
@@ -144,6 +187,58 @@ def seed_dev_sqlite(engine):
                     ativo=random.random()>0.1,
                 ))
         session.add_all(eqs)
+        session.commit()
+
+        # RAG Financeiro
+        rag_fin_rows = []
+        for t in terr_rows[:10]:
+            base = random.randint(2_000_000, 8_000_000)
+            rag_fin_rows.append(DevFatoRAGFinanceiro(
+                periodo="2024",
+                territorio_id=t.id,
+                dotacao_atualizada=base,
+                receita_realizada=round(base * random.uniform(0.75, 0.95), 2),
+                empenhado=round(base * random.uniform(0.6, 0.9), 2),
+                liquidado=round(base * random.uniform(0.55, 0.85), 2),
+                pago=round(base * random.uniform(0.5, 0.8), 2),
+            ))
+        session.add_all(rag_fin_rows)
+        session.commit()
+
+        # RAG Produção
+        tipos_producao = ["Consultas ESF", "Visitas domiciliares", "Procedimentos odontológicos", "Atendimentos NASF"]
+        rag_prod_rows = []
+        for t in terr_rows[:10]:
+            for tipo in tipos_producao:
+                rag_prod_rows.append(DevFatoRAGProducao(
+                    periodo="2024",
+                    territorio_id=t.id,
+                    tipo=tipo,
+                    quantidade=random.randint(1000, 25000),
+                ))
+        session.add_all(rag_prod_rows)
+        session.commit()
+
+        # RAG Metas
+        rag_meta_rows = []
+        for t in terr_rows[:10]:
+            rag_meta_rows.extend([
+                DevFatoRAGMeta(
+                    periodo="2024",
+                    territorio_id=t.id,
+                    indicador="cobertura_aps",
+                    meta_planejada=round(random.uniform(75, 90), 2),
+                    meta_executada=round(random.uniform(60, 95), 2),
+                ),
+                DevFatoRAGMeta(
+                    periodo="2024",
+                    territorio_id=t.id,
+                    indicador="tempo_espera_consulta",
+                    meta_planejada=7.0,
+                    meta_executada=round(random.uniform(5, 12), 2),
+                ),
+            ])
+        session.add_all(rag_meta_rows)
         session.commit()
 
     print("[seed] SQLite-dev: dados gerados para TO — territórios, tempo, unidades, pop_faixa, fontes e equipes.")

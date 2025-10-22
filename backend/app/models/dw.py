@@ -145,6 +145,37 @@ class ArtefatoExecucao(DWBase, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class FatoRAGFinanceiro(DWBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    periodo: str
+    territorio_id: int = Field(foreign_key="dw.dim_territorio.id")
+    dotacao_atualizada: Optional[float] = Field(default=None, ge=0)
+    receita_realizada: Optional[float] = Field(default=None, ge=0)
+    empenhado: Optional[float] = Field(default=None, ge=0)
+    liquidado: Optional[float] = Field(default=None, ge=0)
+    pago: Optional[float] = Field(default=None, ge=0)
+    extract_ts: datetime = Field(default_factory=datetime.utcnow)
+
+
+class FatoRAGProducao(DWBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    periodo: str
+    territorio_id: int = Field(foreign_key="dw.dim_territorio.id")
+    tipo: str
+    quantidade: Optional[int] = Field(default=None, ge=0)
+    extract_ts: datetime = Field(default_factory=datetime.utcnow)
+
+
+class FatoRAGMeta(DWBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    periodo: str
+    territorio_id: int = Field(foreign_key="dw.dim_territorio.id")
+    indicador: str
+    meta_planejada: Optional[float] = None
+    meta_executada: Optional[float] = None
+    extract_ts: datetime = Field(default_factory=datetime.utcnow)
+
+
 __all__ = [
     "DemoItem",
     "DimTerritorio",
@@ -155,9 +186,12 @@ __all__ = [
     "DimTempo",
     "FatoCoberturaAPS",
     "FatoEventosVitais",
-    "FatoFinancas",
-    "FatoRedeFisica",
-    "ArtefatoExecucao",
-    "EquipeTipo",
-    "Sexo",
+        "FatoFinancas",
+        "FatoRedeFisica",
+        "ArtefatoExecucao",
+        "EquipeTipo",
+        "Sexo",
+        "FatoRAGFinanceiro",
+        "FatoRAGProducao",
+        "FatoRAGMeta",
 ]

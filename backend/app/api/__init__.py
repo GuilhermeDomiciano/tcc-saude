@@ -8,6 +8,7 @@ from .routes.equipes import router as equipes_router
 from .routes.fontes import router as fontes_router
 from .routes.pop_faixa import router as pop_faixa_router
 from .routes.rdqa import router as rdqa_router
+from .routes.rag import router as rag_router
 from .routes.public import router as public_router
 
 
@@ -21,4 +22,5 @@ api_router.include_router(equipes_router, tags=["dw"])
 api_router.include_router(fontes_router, tags=["dw"]) 
 api_router.include_router(pop_faixa_router, tags=["dw"]) 
 api_router.include_router(rdqa_router, tags=["rdqa"]) 
+api_router.include_router(rag_router, tags=["rag"]) 
 api_router.include_router(public_router, tags=["public"]) 

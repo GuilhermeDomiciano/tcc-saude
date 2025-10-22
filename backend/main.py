@@ -13,7 +13,11 @@ from app.models.dev_lite import (
     DevArtefatoExecucao,
     DevRefIndicador,
     DevCalcIndicador,
+    DevFatoRAGFinanceiro,
+    DevFatoRAGProducao,
+    DevFatoRAGMeta,
 )
+from app.models.stage import RawIngest as StageRawIngest, RefIndicador as StageRefIndicador, CalcIndicador as StageCalcIndicador
 from datetime import date
 from pathlib import Path
 from sqlalchemy import text as sa_text
@@ -73,6 +77,9 @@ def create_app() -> FastAPI:
                 DevArtefatoExecucao.__table__,
                 DevRefIndicador.__table__,
                 DevCalcIndicador.__table__,
+                DevFatoRAGFinanceiro.__table__,
+                DevFatoRAGProducao.__table__,
+                DevFatoRAGMeta.__table__,
             ])
             with Session(engine) as session:
                 try:
@@ -142,7 +149,58 @@ def create_app() -> FastAPI:
                         # mun=2 em 2025-02 propositalmente ausente para demonstrar faltante
                     ])
                     session.commit()
+                try:
+                    exists_rag_fin = session.exec(select(DevFatoRAGFinanceiro).limit(1)).first()
+                except Exception:
+                    exists_rag_fin = None
+                if not exists_rag_fin:
+                    session.add_all([
+                        DevFatoRAGFinanceiro(
+                            periodo="2024",
+                            territorio_id=1,
+                            dotacao_atualizada=5_000_000,
+                            receita_realizada=4_300_000,
+                            empenhado=3_800_000,
+                            liquidado=3_500_000,
+                            pago=3_300_000,
+                        ),
+                        DevFatoRAGFinanceiro(
+                            periodo="2024",
+                            territorio_id=2,
+                            dotacao_atualizada=3_200_000,
+                            receita_realizada=2_950_000,
+                            empenhado=2_600_000,
+                            liquidado=2_400_000,
+                            pago=2_350_000,
+                        ),
+                    ])
+                    session.commit()
+                try:
+                    exists_rag_prod = session.exec(select(DevFatoRAGProducao).limit(1)).first()
+                except Exception:
+                    exists_rag_prod = None
+                if not exists_rag_prod:
+                    session.add_all([
+                        DevFatoRAGProducao(periodo="2024", territorio_id=1, tipo="Consultas ESF", quantidade=18500),
+                        DevFatoRAGProducao(periodo="2024", territorio_id=1, tipo="Visitas domiciliares", quantidade=9400),
+                        DevFatoRAGProducao(periodo="2024", territorio_id=2, tipo="Consultas ESF", quantidade=11200),
+                        DevFatoRAGProducao(periodo="2024", territorio_id=2, tipo="Procedimentos odontológicos", quantidade=4300),
+                    ])
+                    session.commit()
+                try:
+                    exists_rag_meta = session.exec(select(DevFatoRAGMeta).limit(1)).first()
+                except Exception:
+                    exists_rag_meta = None
+                if not exists_rag_meta:
+                    session.add_all([
+                        DevFatoRAGMeta(periodo="2024", territorio_id=1, indicador="cobertura_aps", meta_planejada=85.0, meta_executada=81.2),
+                        DevFatoRAGMeta(periodo="2024", territorio_id=1, indicador="visitas_domiciliares", meta_planejada=9000, meta_executada=9400),
+                        DevFatoRAGMeta(periodo="2024", territorio_id=2, indicador="cobertura_aps", meta_planejada=78.0, meta_executada=74.5),
+                        DevFatoRAGMeta(periodo="2024", territorio_id=2, indicador="consultas_esf", meta_planejada=11000, meta_executada=11200),
+                    ])
+                    session.commit()
     return app
 
 
 app = create_app()
+

@@ -47,6 +47,7 @@ function NavBar() {
           { to: '/equipes', label: 'Equipes' },
           { to: '/fontes', label: 'Fontes' },
           { to: '/rdqa', label: 'RDQA' },
+          { to: '/rag', label: 'RAG' },
         ].map((i) => (
           <NavLink
             key={i.to}

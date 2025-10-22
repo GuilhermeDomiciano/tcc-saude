@@ -27,6 +27,11 @@ export const routes = {
   rdqaCobertura: '/rdqa/cobertura',
   rdqaDiff: '/rdqa/diff',
   rdqaExportPackage: '/rdqa/export/pacote',
+  ragResumo: '/rag/resumo',
+  ragFinanceiro: '/rag/financeiro',
+  ragProducao: '/rag/producao',
+  ragMetas: '/rag/metas',
+  ragExportPdf: '/rag/export/pdf',
 } as const
 
 export type ListParams = {
@@ -52,6 +57,10 @@ import type {
   DimUnidade,
   DimEquipe,
   DimFonteRecurso,
+  RAGResumo,
+  RAGFinanceiroItem,
+  RAGProducaoItem,
+  RAGMetaItem,
 } from './types'
 
 export const listTempo = (params?: ListParams) => getList<DimTempo>(routes.tempo, params)
@@ -115,6 +124,44 @@ export async function exportRDQAPackage(params?: { periodo?: string }): Promise<
   return { blob: res.data as Blob, execId, hash }
 }
 
+export async function getRAGResumo(periodo?: string, territorioId?: number): Promise<RAGResumo> {
+  const res = await api.get(routes.ragResumo, { params: { periodo, territorio_id: territorioId } })
+  return res.data
+}
+
+export async function getRAGFinanceiro(periodo?: string, territorioId?: number): Promise<RAGFinanceiroItem[]> {
+  const res = await api.get(routes.ragFinanceiro, { params: { periodo, territorio_id: territorioId } })
+  return res.data
+}
+
+export async function getRAGProducao(periodo?: string, territorioId?: number): Promise<RAGProducaoItem[]> {
+  const res = await api.get(routes.ragProducao, { params: { periodo, territorio_id: territorioId } })
+  return res.data
+}
+
+export async function getRAGMetas(periodo?: string, territorioId?: number): Promise<RAGMetaItem[]> {
+  const res = await api.get(routes.ragMetas, { params: { periodo, territorio_id: territorioId } })
+  return res.data
+}
+
+export async function exportRAGPdf(payload: ExportPdfPayload): Promise<{ blob: Blob; execId?: string; hash?: string }> {
+  try {
+    const res = await api.post(routes.ragExportPdf, payload, { responseType: 'blob' })
+    const execId = res.headers?.['x-exec-id'] as string | undefined
+    const hash = res.headers?.['x-hash'] as string | undefined
+    return { blob: res.data as Blob, execId, hash }
+  } catch (err) {
+    if (isAxiosErrorNarrow(err) && err.response?.data instanceof Blob) {
+      try {
+        const text = await err.response.data.text()
+        throw new Error(`Falha ao exportar PDF (RAG) (${err.response.status}): ${text}`)
+      } catch {
+        throw err
+      }
+    }
+    throw err
+  }
+}
 import type { DimTempoCreate, DimTempoUpdate, DimTerritorioCreate, DimTerritorioUpdate } from './types'
 
 export async function createTempo(body: DimTempoCreate) {
@@ -153,3 +200,8 @@ export async function deleteFonte(id: number) {
 export async function deletePopFaixa(id: number) {
   await api.delete(`${routes.popFaixa}/${id}`)
 }
+
+
+
+
+

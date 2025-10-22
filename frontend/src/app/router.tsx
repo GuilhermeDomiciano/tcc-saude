@@ -11,6 +11,11 @@ import Fontes from '../pages/Fontes'
 import RdqaIndex from '../pages/rdqa/Index'
 import RdqaConsistencia from '../pages/rdqa/Consistencia'
 import RdqaCobertura from '../pages/rdqa/Cobertura'
+import RagIndex from '../pages/rag/Index'
+import RagResumo from '../pages/rag/Resumo'
+import RagFinanceiro from '../pages/rag/Financeiro'
+import RagProducao from '../pages/rag/Producao'
+import RagMetas from '../pages/rag/Metas'
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +36,16 @@ export const router = createBrowserRouter([
           { index: true, element: <RdqaIndex /> },
           { path: 'consistencia', element: <RdqaConsistencia /> },
           { path: 'cobertura', element: <RdqaCobertura /> },
+        ],
+      },
+      {
+        path: 'rag',
+        children: [
+          { index: true, element: <RagIndex /> },
+          { path: 'resumo', element: <RagResumo /> },
+          { path: 'financeiro', element: <RagFinanceiro /> },
+          { path: 'producao', element: <RagProducao /> },
+          { path: 'metas', element: <RagMetas /> },
         ],
       },
     ],

@@ -95,3 +95,31 @@ class DevCalcIndicador(SQLModel, table=True):
     chave: str
     periodo: str
     valor: float
+
+
+class DevFatoRAGFinanceiro(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    periodo: str
+    territorio_id: int
+    dotacao_atualizada: Optional[float] = None
+    receita_realizada: Optional[float] = None
+    empenhado: Optional[float] = None
+    liquidado: Optional[float] = None
+    pago: Optional[float] = None
+
+
+class DevFatoRAGProducao(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    periodo: str
+    territorio_id: int
+    tipo: str
+    quantidade: Optional[int] = None
+
+
+class DevFatoRAGMeta(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    periodo: str
+    territorio_id: int
+    indicador: str
+    meta_planejada: Optional[float] = None
+    meta_executada: Optional[float] = None

@@ -1,0 +1,10 @@
+{
+  "referencia": [
+    {"indicador": "cov_aps", "chave": "mun=1", "periodo": "2024-12", "valor": 88.5},
+    {"indicador": "cov_aps", "chave": "mun=2", "periodo": "2024-12", "valor": 79.3}
+  ],
+  "calculado": [
+    {"indicador": "cov_aps", "chave": "mun=1", "periodo": "2024-12", "valor": 85.2},
+    {"indicador": "cov_aps", "chave": "mun=2", "periodo": "2024-12", "valor": 76.1}
+  ]
+}
