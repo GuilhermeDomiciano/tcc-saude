@@ -1,0 +1,13 @@
+__pycache__/
+.pytest_cache/
+dev.db
+dev_test.db
+.env
+*.pyc
+*.pyo
+*.pyd
+*.sqlite
+samples/
+tests/
+.mypy_cache/
+scripts/

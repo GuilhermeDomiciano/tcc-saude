@@ -73,3 +73,13 @@ export default defineConfig([
   },
 ])
 ```
+
+## Running Locally
+- Install deps: `npm install`
+- Configure `.env` (default: `VITE_API_BASE=http://localhost:8000`)
+- Start dev server: `npm run dev`
+
+## Docker
+- The root `docker-compose.yml` builds this frontend with `frontend/Dockerfile`.
+- Static bundle is served by Nginx on container port `80` (mapped to `5173`).
+- Override the API URL by setting the build arg `VITE_API_BASE` (e.g. `VITE_API_BASE=http://localhost:8000 docker compose up --build`).

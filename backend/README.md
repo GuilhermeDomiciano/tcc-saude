@@ -17,6 +17,15 @@ API FastAPI para cadastro e consulta das dimensões analíticas (tempo, territó
 - `uvicorn main:app --reload --port 8000`
 - Health: `GET http://localhost:8000/health`
 
+## Docker (backend + frontend)
+- Requer Docker e Docker Compose.
+- Na raiz do projeto: `docker compose up --build -d`
+  - Backend: http://localhost:8000
+  - Frontend: http://localhost:5173
+- Arquivo `docker-compose.yml` cria volume `backend-data` para persistir `data/dev.db`.
+- Variáveis do backend podem ser ajustadas em `backend/.env.docker`.
+- Para atualizar após mudanças de código: `docker compose up --build`.
+
 ## Executar (Prod – Postgres/Supabase)
 - Defina `DATABASE_URL=postgresql+psycopg://USER:PASS@HOST:5432/DB?sslmode=require`
 - A API garante os schemas `dw`/`stage` e executa `alembic upgrade head` no startup.
