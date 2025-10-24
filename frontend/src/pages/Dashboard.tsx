@@ -79,7 +79,7 @@ export default function Dashboard() {
             key={section.title}
             className="relative overflow-hidden rounded-2xl border bg-card shadow-sm ring-1 ring-border/40"
           >
-            <div className={cn('absolute inset-0 bg-gradient-to-br', section.gradient)} aria-hidden />
+            <div className={cn('absolute inset-0 bg-linear-to-br', section.gradient)} aria-hidden />
             <div className="relative space-y-4 p-6">
               <div className="space-y-2">
                 <h3 className="text-base font-semibold">{section.title}</h3>

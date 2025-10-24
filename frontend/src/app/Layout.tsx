@@ -1,6 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
 
 export function Layout() {
   return (
@@ -67,16 +65,16 @@ function NavBar() {
 }
 
 function ApiKeyField() {
-  const [key, setKey] = useState('')
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  useEffect(() => {
-    const k = localStorage.getItem('apiKey') || ''
-    setKey(k)
-  }, [])
-  const onChange = (v: string) => {
-    setKey(v)
-    localStorage.setItem('apiKey', v)
-  }
+  // const [key, setKey] = useState('')
+  // const inputRef = useRef<HTMLInputElement | null>(null)
+  // useEffect(() => {
+  //   const k = localStorage.getItem('apiKey') || ''
+  //   setKey(k)
+  // }, [])
+  // const onChange = (v: string) => {
+  //   setKey(v)
+  //   localStorage.setItem('apiKey', v)
+  // }
   return (
     // <div className="flex items-center gap-2 text-sm">
     //   <label htmlFor="api-key" className="text-muted-foreground">X-API-Key</label>

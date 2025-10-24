@@ -96,7 +96,7 @@ export default function Ingestao() {
           </TableCaption>
           <TableHeader>
             <TableRow className="bg-muted">
-              <TableHead className="w-[160px]">Fonte</TableHead>
+              <TableHead className="w-40">Fonte</TableHead>
               <TableHead>Periodo</TableHead>
               <TableHead>Versao</TableHead>
               <TableHead>Status</TableHead>

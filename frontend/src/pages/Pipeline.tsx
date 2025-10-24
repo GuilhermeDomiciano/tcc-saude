@@ -1,32 +1,32 @@
 const steps = [
   {
     numero: '1',
-    titulo: 'Ingestao',
-    detalhe: 'Upload dos arquivos CSV ou planilhas com registro de fonte, periodo e versao.',
+    titulo: 'Ingestão',
+    detalhe: 'Upload dos arquivos CSV ou planilhas com registro de fonte, período e versão.',
     rota: '/ingestao',
   },
   {
     numero: '2',
-    titulo: 'Validacao',
-    detalhe: 'Regras de consistencia (dominios IBGE, chaves, datas) e logs de conferencias.',
+    titulo: 'Validação',
+    detalhe: 'Regras de consistência (domínios IBGE, chaves, datas) e logs de conferências.',
     rota: '/logs',
   },
   {
     numero: '3',
-    titulo: 'Materializacao',
-    detalhe: 'Views SQL declarativas com metadados de numerador, denominador e periodo de referencia.',
+    titulo: 'Materialização',
+    detalhe: 'Views SQL declarativas com metadados de numerador, denominador e período de referência.',
     rota: '/materializacao',
   },
   {
     numero: '4',
-    titulo: 'Publicacao API',
+    titulo: 'Publicação API',
     detalhe: 'Endpoints REST com exec-id e hash para cada pacote de exportacao gerado.',
     rota: '/swagger',
   },
   {
     numero: '5',
-    titulo: 'Visualizacao',
-    detalhe: 'Dashboards interativos e exportacao automatica do RDQA e do RAG.',
+    titulo: 'Visualização',
+    detalhe: 'Dashboards interativos e exportação automática do RDQA e do RAG.',
     rota: '/',
   },
 ]
