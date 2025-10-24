@@ -91,10 +91,10 @@ export default function Territorios() {
       <div className="no-print grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
         <div className="space-y-1">
           <Label htmlFor="f-uf">UF</Label>
-          <Input id="f-uf" className="w-20 uppercase" maxLength={2} value={uf} placeholder="RS"
+          <Input id="f-uf" className="w-20 uppercase" maxLength={2} value={uf} placeholder="TO"
             aria-describedby="ajuda-uf"
             onChange={(e) => { setUf(e.target.value.toUpperCase()); setOffset(0) }} />
-          <span id="ajuda-uf" className="block text-xs text-muted-foreground">2 letras, ex.: RS</span>
+          <span id="ajuda-uf" className="block text-xs text-muted-foreground">2 letras, ex.: TO</span>
         </div>
         <div className="space-y-1">
           <Label htmlFor="f-ibge">IBGE</Label>
