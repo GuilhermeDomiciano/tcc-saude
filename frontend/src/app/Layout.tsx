@@ -35,26 +35,30 @@ function NavBar() {
   const linkBase = 'text-sm transition-colors px-2.5 py-1.5 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
   const linkInactive = 'text-muted-foreground hover:text-foreground hover:bg-accent'
   const linkActive = 'bg-primary text-primary-foreground hover:bg-primary/90'
+  const links = [
+    { to: '/', label: 'Dashboard' },
+    { to: '/tempo', label: 'Tempo' },
+    { to: '/territorios', label: 'Territorios' },
+    { to: '/pop-faixa', label: 'Pop. Faixa' },
+    { to: '/unidades', label: 'Unidades' },
+    { to: '/equipes', label: 'Equipes' },
+    { to: '/fontes', label: 'Fontes' },
+    { to: '/ingestao', label: 'Ingestao' },
+    { to: '/pipeline', label: 'Pipeline' },
+    { to: '/auditoria', label: 'Auditoria' },
+    { to: '/rdqa', label: 'RDQA' },
+    { to: '/rag', label: 'RAG' },
+  ]
   return (
     <nav className="no-print border-b">
       <div className="mx-auto max-w-6xl p-2 flex flex-wrap gap-2">
-        {[
-          { to: '/', label: 'Dashboard' },
-          { to: '/tempo', label: 'Tempo' },
-          { to: '/territorios', label: 'Territórios' },
-          { to: '/pop-faixa', label: 'Pop. Faixa' },
-          { to: '/unidades', label: 'Unidades' },
-          { to: '/equipes', label: 'Equipes' },
-          { to: '/fontes', label: 'Fontes' },
-          { to: '/rdqa', label: 'RDQA' },
-          { to: '/rag', label: 'RAG' },
-        ].map((i) => (
+        {links.map((item) => (
           <NavLink
-            key={i.to}
-            to={i.to}
+            key={item.to}
+            to={item.to}
             className={({ isActive }: { isActive: boolean }) => [linkBase, isActive ? linkActive : linkInactive].join(' ')}
           >
-            {i.label}
+            {item.label}
           </NavLink>
         ))}
       </div>
@@ -74,21 +78,24 @@ function ApiKeyField() {
     localStorage.setItem('apiKey', v)
   }
   return (
-    <div className="flex items-center gap-2 text-sm">
-      <label htmlFor="api-key" className="text-muted-foreground">X-API-Key</label>
-      <input
-        id="api-key"
-        ref={inputRef}
-        value={key}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="opcional"
-        className="w-56 rounded-md border bg-background px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-ring"
-      />
-      {key && (
-        <Button variant="ghost" size="sm" aria-label="Limpar API Key" onClick={() => { onChange(''); inputRef.current?.focus() }}>Limpar</Button>
-      )}
-    </div>
+    // <div className="flex items-center gap-2 text-sm">
+    //   <label htmlFor="api-key" className="text-muted-foreground">X-API-Key</label>
+    //   <input
+    //     id="api-key"
+    //     ref={inputRef}
+    //     value={key}
+    //     onChange={(e) => onChange(e.target.value)}
+    //     placeholder="opcional"
+    //     className="w-56 rounded-md border bg-background px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-ring"
+    //   />
+    //   {key && (
+    //     <Button variant="ghost" size="sm" aria-label="Limpar API Key" onClick={() => { onChange(''); inputRef.current?.focus() }}>Limpar</Button>
+    //   )}
+    // </div>
+    <></>
   )
 }
 
 export default Layout
+
+

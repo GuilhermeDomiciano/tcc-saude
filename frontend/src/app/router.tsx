@@ -8,6 +8,9 @@ import PopFaixa from '../pages/PopFaixa'
 import Unidades from '../pages/Unidades'
 import Equipes from '../pages/Equipes'
 import Fontes from '../pages/Fontes'
+import Ingestao from '../pages/Ingestao'
+import Pipeline from '../pages/Pipeline'
+import ExecAudit from '../pages/ExecAudit'
 import RdqaIndex from '../pages/rdqa/Index'
 import RdqaConsistencia from '../pages/rdqa/Consistencia'
 import RdqaCobertura from '../pages/rdqa/Cobertura'
@@ -30,6 +33,9 @@ export const router = createBrowserRouter([
       { path: 'unidades', element: <Unidades /> },
       { path: 'equipes', element: <Equipes /> },
       { path: 'fontes', element: <Fontes /> },
+      { path: 'ingestao', element: <Ingestao /> },
+      { path: 'pipeline', element: <Pipeline /> },
+      { path: 'auditoria', element: <ExecAudit /> },
       {
         path: 'rdqa',
         children: [

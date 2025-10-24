@@ -1,0 +1,104 @@
+﻿
+
+
+Transparência em Saúde Municipal: pipeline reprodutível para RDQA e RAG: Da planilha aos painéis e relatórios, com rastreabilidade ponta a ponta
+
+Guilherme Domiciano Silva1, Fabiano Fagundes2
+
+
+RESUMO
+
+Este trabalho apresenta um pipeline reprodutível e auditável para geração do RDQA e do RAG em saúde municipal, integrando múltiplas fontes de dados e oferecendo dashboards e exportação automática dos quadros exigidos. O objetivo é reduzir retrabalho e erros, elevando a confiabilidade e a transparência dos indicadores. Metodologicamente, adotamos Design Science Research para projetar e avaliar o artefato, articulando ciclos de relevância, rigor e design, com métricas objetivas (tempo, erros, reprodutibilidade) e subjetivas (confiança, utilidade). Nesta etapa, foi desenvolvido um MVP funcional com rastreabilidade completa das fontes de dados; a avaliação quantitativa será conduzida nos próximos ciclos quadrimestrais.
+
+Palavras-chave: Transparência  em saúde; design science research; reprodutibilidade; RDQA.
+
+
+INTRODUÇÃO
+
+A transparência na gestão pública em saúde requer que dados administrativos, epidemiológicos e financeiros sejam divulgados de forma acessível e auditável. No Brasil, a Lei nº 12.527/2011 (Lei de Acesso à Informação) determina que o acesso seja a regra e o sigilo, exceção, assegurando à sociedade meios de controle sobre as ações governamentais (BRASIL, 2011, online).
+No âmbito do Sistema Único de Saúde (SUS), dois instrumentos orientam a prestação de contas: o Relatório Detalhado do Quadrimestre Anterior (RDQA) e o Relatório Anual de Gestão (RAG), previstos na Lei Complementar nº 141/2012. O RDQA apresenta resultados quadrimestrais e execução financeira das ações planejadas, enquanto o RAG consolida o desempenho anual da gestão (BRASIL, 2012, art. 36; MINISTÉRIO DA SAÚDE, 2019, online).
+Apesar da obrigatoriedade, a elaboração desses relatórios ainda depende de processos manuais e fragmentados, o que compromete a rastreabilidade e a confiabilidade das informações. As audiências públicas exigidas pela legislação demandam revisões constantes, comparabilidade histórica e agilidade na consolidação dos dados (SES-TO, 2024, online).
+Este trabalho propõe uma plataforma municipal de transparência em saúde que automatiza a geração dos relatórios RDQA e RAG por meio de um pipeline reprodutível e auditável, capaz de integrar, validar e materializar dados de diferentes fontes em painéis e relatórios oficiais.
+A pesquisa adota a Design Science Research (DSR) como metodologia, articulando os ciclos de relevância, rigor e design (HEVNER et al., 2004, online), orientados por boas práticas de reprodutibilidade computacional (SANDVE et al., 2013, online). Essa abordagem busca unir rigor científico, aplicabilidade e inovação tecnológica, permitindo que os resultados sejam verificáveis e replicáveis.
+O objetivo geral é disponibilizar um pipeline auditável para geração automatizada do RDQA e do RAG, reduzindo retrabalho e aumentando a confiabilidade das informações. Os objetivos específicos incluem: (i) padronizar a ingestão de dados demográficos, epidemiológicos e financeiros; (ii) gerar indicadores com rastreabilidade e controle de versão; e (iii) prover painéis interativos e exportações automáticas com verificação pública.
+
+
+MATERIAL E MÉTODOS
+
+O estudo adota a abordagem de DSR para projetar e avaliar um artefato de software voltado à transparência em saúde. A DSR busca gerar conhecimento científico por meio da construção e avaliação de artefatos tecnológicos que solucionem problemas reais, combinando relevância prática, rigor científico e inovação tecnológica.
+O processo estrutura-se em três ciclos interdependentes: o ciclo de relevância, que define o problema e o contexto de aplicação; o ciclo de rigor, ancorado em teorias, normas e boas práticas consolidadas; e o ciclo de design, no qual o artefato é concebido, implementado e aprimorado iterativamente (HEVNER et al., 2004, online).
+No contexto deste estudo, o ciclo de relevância está fundamentado nas exigências legais de transparência e prestação de contas da gestão pública em saúde, representadas pelo RDQA e pelo RAG. O ciclo de rigor foi guiado pelos princípios de qualidade e reprodutibilidade dos dados — acurácia, completude, consistência e rastreabilidade — e pelas normas que regem a elaboração dos instrumentos de planejamento e avaliação do SUS. Já o ciclo de design materializou-se no desenvolvimento incremental da plataforma, abrangendo as etapas de ingestão e validação de dados, cálculo e materialização de indicadores e publicação dos resultados em ambiente web interativo, com controle de versão e auditabilidade.
+Foram utilizados dados públicos agregados de múltiplos sistemas do SUS: demografia (IBGE), nascidos vivos (SINASC), mortalidade (SIM), agravos (SINAN), Atenção Primária (SISAB/e-SUS AB), estabelecimentos (CNES), imunização (PNI/LocalizaSUS) e execução orçamentária (SIAF/SIOPS).
+A metodologia propõe a automação ponta a ponta do processo “da planilha aos painéis e relatórios” por meio de um pipeline reprodutível com proveniência registrada em cada etapa. O fluxo operacional compreende: (i) coleta de fontes públicas; (ii) validação e normalização (padronização de codificação UTF-8, datas ISO-8601, chaves e domínios, além de checagens de consistência e completude); (iii) cálculo de indicadores materializados em views SQL com fórmulas declarativas e metadados (numerador, denominador, período e unidade); (iv) publicação via API; (v) e visualização no frontend.
+A plataforma é composta por backend em FastAPI/SQLModel/PostgreSQL, responsável pelo processamento, auditoria e exposição dos resultados e metadados via REST, e frontend em React/Vite/TypeScript/Tailwind, que fornece dashboards e exportação automática dos quadros e tabelas exigidos.
+
+Figura 1 - Arquitetura geral do pipeline RDQA/RAG.
+
+Fonte: Elaboração própria.
+
+O diagrama apresenta o fluxo do processo, desde as fontes de dados até a entrega de resultados (API, dashboards e PDFs). Destacando a rastreabilidade de cada execução.
+Para garantir auditabilidade e reprodutibilidade, cada execução de geração de relatórios é identificada por um Exec-ID (identificador único da execução) e acompanhada do hash SHA-256 (assinatura criptográfica do pacote exportado). Esses identificadores são persistidos em banco e disponibilizados em endpoint público, permitindo a conferência independente das saídas a partir das mesmas versões de dados e regras.
+A avaliação do artefato será conduzida em etapas posteriores, com base em métricas quantitativas de desempenho e consistência, considerando aspectos como cobertura dos quadros, redução de retrabalho e reprodutibilidade das execuções.
+
+
+RESULTADOS E DISCUSSÃO
+
+O artefato desenvolvido consiste em um pipeline reprodutível e auditável para a geração dos relatórios RDQA e RAG em saúde municipal. A solução integra processos de ingestão padronizada, normalização, validação explícita e cálculo determinístico de indicadores, com publicação automatizada por meio de API e painéis interativos. A execução em dados sintéticos demonstrou o funcionamento ponta a ponta do fluxo, gerando saídas idênticas sob o mesmo Exec-ID, com registro completo das versões de dados e de regras, além da manutenção de logs auditáveis. Em comparação com os processos manuais tradicionais, o modelo proposto aumenta a rastreabilidade e reduz significativamente a probabilidade de erros humanos, além de possibilitar reexecuções verificáveis de forma independente.
+A Figura 2 apresenta uma visão geral da arquitetura funcional do sistema, destacando a sequência lógica de execução, desde a coleta de dados até a disponibilização dos relatórios e dashboards.
+Figura 2 - Arquitetura funcional do pipeline RDQA/RAG.
+Fonte: Elaboração própria.
+O backend foi implementado em FastAPI, utilizando SQLModel/SQLAlchemy e PostgreSQL como base de dados. Sua organização modular em camadas — models, schemas, repositories, services e API — garante escalabilidade e auditabilidade. As migrações de banco de dados são gerenciadas via Alembic, assegurando versionamento consistente. O frontend, desenvolvido em React, Vite e TypeScript, adota o framework Tailwind CSS e o conjunto de componentes shadcn/ui para interface responsiva. Essa arquitetura oferece painéis de visualização, filtros dinâmicos e exportação automática dos quadros exigidos pelos relatórios RDQA e RAG.
+Figura 3 - Painel principal e interface de exportação automática.
+Fonte: Elaboração própria.
+O sistema foi projetado para operar de forma containerizada, por meio do uso de Docker, o que permite replicação local e empacotamento de scripts e dados de referência. Foram utilizados dados públicos agregados dos principais sistemas nacionais de informação em saúde, abrangendo os períodos de 2014 a 2025. As bases integradas incluem: IBGE, SINASC, SIM, SINAN, SISAB/e-SUS AB, CNES, PNI/LocalizaSUS e SIAF/SIOPS. Esses insumos alimentam indicadores-chave como taxas de mortalidade geral por mil habitantes, incidência de agravos por 100 mil habitantes e despesas orçamentárias por rubrica.
+Figura 4 - Tela de ingestão e integração das fontes de dados do SUS.
+Fonte: Elaboração própria.
+O fluxo operacional “da planilha aos painéis e relatórios” foi estruturado em cinco etapas principais: (i) ingestão de arquivos brutos e registros de proveniência (fonte, período, versão); (ii) validação e normalização (UTF-8, ISO-8601, chaves/dominios, checagens de consistência/completude); (iii) materialização de indicadores em Views SQL com fórmulas declarativas e metadados; (iv) publicação via API (REST) com cabeçalhos de rastreabilidade; (v) visualização e exportação no frontend (dashboards, quadros PDF). 
+A Figura 5 demonstra esse fluxo, representando o encadeamento das etapas de processamento e o ponto em que cada módulo atua.
+Figura 5 - Etapas do pipeline “da planilha aos painéis e relatórios”.
+Fonte: Elaboração própria.
+Durante a execução do pipeline, cada processamento é identificado por um Exec-ID, um código gerado automaticamente que representa uma execução específica do sistema. Esse identificador permite associar de forma inequívoca todos os arquivos, logs e saídas produzidos em uma determinada rodada de processamento. Além disso, para garantir a integridade dos pacotes exportados, é gerado um hash criptográfico SHA-256, armazenado junto ao registro do Exec-ID no banco de dados.
+Essas informações são disponibilizadas em um endpoint público da API, o qual permite que qualquer usuário técnico verifique a validade e a integridade dos resultados gerados, assegurando transparência e auditabilidade das execuções. Essa funcionalidade é especialmente relevante no contexto da gestão pública, em que a rastreabilidade e a verificação independente das informações são essenciais para a prestação de contas e o controle social.
+Figura 6 - Endpoint público para consulta de Exec-ID e verificação de integridade das execuções.
+Fonte: Elaboração própria.
+
+A avaliação do artefato será realizada em etapas futuras, com base em métricas quantitativas de desempenho e consistência. Entre as variáveis a serem analisadas estão:
+Consistência (MAPE): erro médio percentual entre planilhas originais e saídas da plataforma;
+Cobertura: proporção de quadros e campos do RDQA/RAG gerados automaticamente;
+Produtividade (horas): tempo necessário para fechamento quadrimestral (comparativo entre processo manual e automatizado);
+Atualidade (TTP): tempo decorrido entre o fechamento do período e a publicação;
+Desempenho: tempo total de ETL e latência P95 de respostas da API.
+Os resultados esperados incluem a redução do tempo de consolidação, melhoria na consistência dos indicadores e aumento da rastreabilidade e transparência nos processos de geração dos relatórios. Dessa forma, o pipeline proposto representa um avanço significativo na automação da prestação de contas em saúde municipal, ao oferecer um processo padronizado, verificável e replicável.
+
+CONCLUSÃO
+
+Deve basear-se exclusivamente nos resultados do trabalho. Evitar a repetição dos resultados em listagem subsequente, buscando, sim, confrontar o que se obteve com os objetivos inicialmente estabelecidos. Nesta seção, não deve ser utilizada citação direta ou indireta, devendo apresentar a opinião do(s) autor(es) respeitando os resultados da pesquisa. Retomar os objetivos propostos, apresentando a forma como eles foram alcançados.
+Caso os(as) autores(as) considerem que a pesquisa não é conclusiva, mas haja considerações a serem pontuadas, eles poderão descrevê-las nesta seção. Muitos artigos utilizam a estrutura IMRD, que segundo Medeiros e Tomasi (2021, local. 60) contém “[...] Introdução, Método, Resultados e Discussão (IMRD) [que] possibilita refletir sobre o processo de descoberta científica, o que leva a admitir que não se trata tão somente de uma questão formal.”
+
+
+REFERÊNCIAS
+
+ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. ABNT NBR 6028: Informação e documentação – Resumo, resenha e recensão – Apresentação. Rio de Janeiro: ABNT, 2021.
+
+ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS [ABNT]. ABNT NBR 6023: informação e documentação – Referências – Elaboração. 3. ed. Rio de Janeiro: ABNT, 2025.
+
+ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. ABNT NBR 10520: informação e documentação – Citações em documentos – Apresentação. Rio de Janeiro: ABNT, 2023.
+
+MARCONI, Marina de Andrade; LAKATOS, Eva Maria. Metodologia do trabalho científico: projetos de pesquisa, pesquisa bibliográfica, teses de doutorado [...]. 9. ed. São Paulo: Atlas, 2021. E-book. [Minha Biblioteca]. Disponível em: https://integrada.minhabiblioteca.com.br/reader/books/9788597026559. Acesso em: 31 jul. 2023.
+
+MEDEIROS, João Bosco; TOMASI, Carolina. Redação de artigos científicos: métodos de realização, seleção de periódicos, publicação. 2. ed. São Paulo: Atlas, 2021. E-book. [Minha Biblioteca]. Disponível em: https://integrada.minhabiblioteca.com.br/reader/books/9788597026641. Acesso em: 31 jul. 2023.
+
+PEREIRA, Mauricio Gomes. Artigos científicos: como redigir, publicar e avaliar. Rio de Janeiro: Guanabara Koogan, 2018. E-book. [Minha Biblioteca]. Disponível em: https://integrada.minhabiblioteca.com.br/reader/books/978-85-277-2121-9. Acesso em: 31 jul. 2023.
+
+
+________________________________________
+INFORMAÇÕES AUTORAIS
+
+Nome completo do primeiro autor, status acadêmico, e-mail para contato.
+Nome completo do segundo autor, status acadêmico, e-mail para contato.
+Nome completo do Orientador.  status acadêmico, e-mail para contato.
+
+
+
+
+
